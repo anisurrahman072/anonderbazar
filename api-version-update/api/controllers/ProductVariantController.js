@@ -6,11 +6,15 @@
  */
 const _ = require('lodash');
 const async = require('async');
+const {performance} = require('perf_hooks');
+
 module.exports = {
   //Method called for deleting a product variant
   //Model models/ProductVariant.js
   destroy: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const productVariant = await ProductVariant.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
       return res.json(productVariant);
     } catch (error) {
@@ -28,6 +32,8 @@ module.exports = {
   create: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       // eslint-disable-next-line eqeqeq
       if (req.body.variant_type == 0) {
 
@@ -64,6 +70,8 @@ module.exports = {
     }
 
     try {
+      const time1 = performance.now();
+
       const productVariants = await ProductVariant.find({product_id: req.param('product_id'), deletedAt: null})
         .populate(['variant_id', 'warehouses_variant_id']);
 

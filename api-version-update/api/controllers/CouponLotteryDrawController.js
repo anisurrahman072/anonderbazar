@@ -7,9 +7,12 @@
 
 const Promise = require('bluebird');
 const moment = require('moment');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   byLotteryId: async (req, res) => {
+    const time1 = performance.now();
+
     const couponLotteryDrawNativeQuery = Promise.promisify(CouponLotteryDraw.getDatastore().sendNativeQuery);
     try {
       let rawQuery = `
@@ -37,6 +40,9 @@ module.exports = {
         allDraws = rawResult.rows;
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         total: totalDraws,
@@ -46,6 +52,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in getting all coupon lottery draws';
       return res.status(400).json({
         success: false,
@@ -56,6 +64,8 @@ module.exports = {
   },
   getAllWinner: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       /** Find the Lottery Coupon by code */
       let code = req.param('code');
       let _where = {
@@ -112,6 +122,9 @@ module.exports = {
         message = 'Successfully get all winners!';
         resCode = 'success';
       }
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message,
@@ -119,6 +132,8 @@ module.exports = {
         allWinner,
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error occurred while getting all winners!',
@@ -129,6 +144,8 @@ module.exports = {
 
   makeDraw: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       /** Find the Lottery Coupon by code */
       let code = req.param('code');
       let _where = {};
@@ -289,6 +306,9 @@ module.exports = {
             .set({coupon_lottery_draw_id: drawnLottery.id}).usingConnection(db);
         });
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         code: 'success',
@@ -296,6 +316,8 @@ module.exports = {
         data: randomCouponId
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error occurred while making a draw!';
       res.status(400).json({
         success: false,

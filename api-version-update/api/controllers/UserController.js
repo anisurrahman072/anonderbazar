@@ -15,10 +15,13 @@ const {ORDER_STATUSES} = require('../../libs/orders');
 const {getAllUsers} = require('../../libs/users');
 const {customer_group_id, shop_group_id} = require('../../libs/groups');
 const {comparePasswords} = require('../../libs/helper');
+const {performance} = require('perf_hooks');
 
 module.exports = {
 
   authUser: async (req, res) => {
+    const time1 = performance.now();
+
     if (!req.token) {
       return res.status(401).json({err: 'No Authorization header was found'});
     }
@@ -55,6 +58,8 @@ module.exports = {
 
   findOne: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const user = await User.findOne({
         id: req.param('id')
       })
@@ -90,6 +95,8 @@ module.exports = {
   //Model models/User.js
   destroy: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const user = await User.findOne({
         id: req.param('id')
       }).populate('group_id');
@@ -125,6 +132,8 @@ module.exports = {
   //Method called for creating a user data
   //Model models/User.js
   create: async (req, res) => {
+
+    const time1 = performance.now();
 
     // eslint-disable-next-line eqeqeq
     if (req.body.group_id == 4) {
@@ -180,6 +189,8 @@ module.exports = {
   //Method called for updating a user password data
   //Model models/User.js
   updatePassword: async (req, res) => {
+    const time1 = performance.now();
+
     if (!req.param('id')) {
       return res.badRequest('Invalid request');
     }
@@ -229,6 +240,8 @@ module.exports = {
   //Model models/User.js
   update: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let user = await User.findOne({
         id: req.param('id')
       }).populate('group_id');
@@ -330,6 +343,8 @@ module.exports = {
 
   checkUsername: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       if (!req.body.username) {
         return res.status(422).json({
           success: false,
@@ -369,6 +384,8 @@ module.exports = {
   checkPhone: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       if (!req.body.phone) {
         return res.status(422).json({
           success: false,
@@ -408,6 +425,8 @@ module.exports = {
   checkEmail: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       if (!req.body.email) {
         return res.status(422).json({
           success: false,
@@ -446,6 +465,8 @@ module.exports = {
   },
   getAllShopUsers: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const {
         allCustomer,
         totalCustomers,
@@ -476,6 +497,8 @@ module.exports = {
   //Model models/User.js
   getAllCustomers: async (req, res) => {
     try {
+
+      const time1 = performance.now();
 
       const {
         allCustomer,
@@ -508,6 +531,8 @@ module.exports = {
   //Model models/User.js
   find: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let _pagination = pagination(req.query);
       let query = req.query;
 
@@ -599,6 +624,8 @@ module.exports = {
   //Method called for getting user dashboard data
   //Model models/User.js, models/Order.js
   getAuthCustomerData: async (req, res) => {
+    const time1 = performance.now();
+
     if (!req.token) {
       return res.status(401).json({err: 'No Authorization header was found'});
     }
@@ -695,6 +722,8 @@ module.exports = {
   getUserWithDashboardData: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       const user = User.findOne({
         id: req.param('id')
       });

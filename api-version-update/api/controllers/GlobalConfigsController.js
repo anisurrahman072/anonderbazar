@@ -4,12 +4,19 @@
  * @description :: Server-side logic for managing users
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
+const {performance} = require('perf_hooks');
+
 module.exports = {
   getGlobalConfig: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let configData = await GlobalConfigs.find({
         deletedAt: null
       });
+
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json({
         success: true,
@@ -18,6 +25,8 @@ module.exports = {
       });
     }
     catch (error){
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         massage: 'Error occurred while fetching global Config data',
@@ -28,12 +37,17 @@ module.exports = {
 
   updateGlobalConfig: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let newData = req.body;
       let id = req.query.id;
 
       let updatedConfig = await GlobalConfigs.update({
         id
       }).set(newData).fetch();
+
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json({
         success: true,
@@ -42,6 +56,8 @@ module.exports = {
       });
     }
     catch (error){
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         massage: 'Error occurred while updating global Config data',

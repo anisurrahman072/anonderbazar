@@ -10,11 +10,14 @@ const Promise = require('bluebird');
 const {asyncForEach} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
 const {SUB_ORDER_STATUSES} = require('../../libs/subOrders');
+const {performance} = require('perf_hooks');
 
 module.exports = {
 
   massPrStatusUpdate: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       if (req.body.ids && req.body.ids.length > 0) {
 
         await Suborder.update({
@@ -43,6 +46,8 @@ module.exports = {
   },
   forCsv: async (req, res) => {
     try {
+      const time1 = performance.now();
+
 
       let _pagination = pagination(req.query);
 
@@ -262,6 +267,8 @@ module.exports = {
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
   getAll: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let _pagination = pagination(req.query);
 
       const SuborderQuery = Promise.promisify(Suborder.getDatastore().sendNativeQuery);
@@ -391,6 +398,8 @@ module.exports = {
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
   getsuborderwithpr: async (req, res) => {
     try {
+      const time1 = performance.now();
+
 
       let _pagination = pagination(req.query);
 

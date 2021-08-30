@@ -9,11 +9,14 @@ const Promise = require('bluebird');
 const {asyncForEach} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
 const {ORDER_STATUSES} = require('../../libs/orders');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   // destroy a row
   destroy: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const suborder = await Suborder.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
 
       return res.json(suborder);
@@ -27,6 +30,8 @@ module.exports = {
   updatebyorderid: async function (req, res) {
 
     try {
+      const time1 = performance.now();
+
       const suborders = await Suborder.update({product_order_id: req.param('id')}, req.body).fetch();
       // eslint-disable-next-line eqeqeq
       /*if (req.body.status == SUB_ORDER_STATUSES.processing || req.body.status == SUB_ORDER_STATUSES.delivered || req.body.status == SUB_ORDER_STATUSES.canceled) {
@@ -58,6 +63,8 @@ module.exports = {
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
   getSuborder: async (req, res) => {
     try {
+
+      const time1 = performance.now();
 
       const SuborderQuery = Promise.promisify(Suborder.getDatastore().sendNativeQuery);
       let _pagination = pagination(req.query);
@@ -212,6 +219,8 @@ module.exports = {
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
   getSuborderWithDate: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let _pagination = pagination(req.query);
 
       /* WHERE condition for .......START.....................*/
@@ -282,6 +291,8 @@ module.exports = {
   getWithFull: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       let suborder = await Suborder.findOne({
         id: req.param('id'),
         deletedAt: null

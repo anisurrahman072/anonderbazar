@@ -10,11 +10,14 @@ const Promise = require('bluebird');
 const {pagination} = require('../../libs/pagination');
 const {PARTIAL_ORDER_TYPE} = require('../../libs/constants');
 const {ORDER_STATUSES} = require('../../libs/orders');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   // destroy a row
   destroy: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const user = await SuborderItem.updateOne(
         {id: req.param('id')},
       ).set({deletedAt: new Date()});
@@ -27,6 +30,8 @@ module.exports = {
     const SuborderItemQuery = Promise.promisify(SuborderItem.getDatastore().sendNativeQuery);
     const StatusChangeQuery = Promise.promisify(StatusChange.getDatastore().sendNativeQuery);
     try {
+      const time1 = performance.now();
+
       let rawSelect = `
       SELECT
           suborder_item.id as id,
@@ -128,6 +133,8 @@ module.exports = {
   getOrdersByDate: async (req, res) => {
     try {
       const SuborderItemQuery = Promise.promisify(SuborderItem.getDatastore().sendNativeQuery);
+
+      const time1 = performance.now();
 
       let rawSelect = `
       SELECT
@@ -269,6 +276,8 @@ module.exports = {
   getByOrderIds: async (req, res) => {
     const SuborderItemQuery = Promise.promisify(SuborderItem.getDatastore().sendNativeQuery);
     try {
+      const time1 = performance.now();
+
       let rawSelect = `
       SELECT suborder_item.id, suborder_item.product_suborder_id as suborder_id, p_order.id as order_id, suborder_item.product_id,
        products.name as product_name, products.price as price, products.code as product_code, p_order.ssl_transaction_id,
@@ -352,6 +361,8 @@ module.exports = {
   getSuborderItems: async (req, res) => {
     const SuborderItemQuery = Promise.promisify(SuborderItem.getDatastore().sendNativeQuery);
     try {
+      const time1 = performance.now();
+
       let _pagination = pagination(req.query);
       let rawSelect = 'SELECT suborder_item.id, suborder_item.product_suborder_id as suborder_id, p_order.id as order_id, suborder_item.product_id,';
       rawSelect += ' suborder_item.warehouse_id, suborder_item.product_quantity, suborder_item.product_total_price, ';

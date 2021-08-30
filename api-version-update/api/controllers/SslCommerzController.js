@@ -10,10 +10,13 @@ const {getGlobalConfig} = require('../../libs/helper');
 const {sslWebUrl} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
 const logger = require('../../libs/softbd-logger').Logger;
+const {performance} = require('perf_hooks');
 
 module.exports = {
 
   ipnPaymentSuccess: async function (req, res) {
+
+    const time1 = performance.now();
 
     let customer = await PaymentService.getTheCustomer(req.query.user_id);
     if (!customer) {
@@ -152,6 +155,8 @@ module.exports = {
   },
   //Method called when sslCommerzSuccess from frontend
   paymentSuccess: async function (req, res) {
+    const time1 = performance.now();
+
     let customer = await PaymentService.getTheCustomer(req.query.user_id);
     if (!customer) {
       res.writeHead(301,
@@ -303,6 +308,8 @@ module.exports = {
   },
   //Method called when sslCommerzFail fails sends redirectory route
   paymentFailure: function (req, res) {
+    const time1 = performance.now();
+
     res.writeHead(301,
       {Location: sslWebUrl + '/checkout'}
     );
@@ -310,12 +317,16 @@ module.exports = {
   },
   //Method called when sslCommerzError error sends redirectory route
   paymentError: function (req, res) {
+    const time1 = performance.now();
+
     res.writeHead(301,
       {Location: sslWebUrl + '/checkout'}
     );
     res.end();
   },
   ipnPaymentSuccessForPartial: async function (req, res) {
+
+    const time1 = performance.now();
 
     let customer = await PaymentService.getTheCustomer(req.query.user_id);
     if (!customer) {
@@ -425,6 +436,8 @@ module.exports = {
     }
   },
   paymentSuccessPartial: async function (req, res) {
+
+    const time1 = performance.now();
 
     let customer = await PaymentService.getTheCustomer(req.query.user_id);
     if (!customer) {
@@ -540,6 +553,8 @@ module.exports = {
     }
   },
   paymentFailurePartial: async function (req, res) {
+    const time1 = performance.now();
+
     console.log(finalError);
     res.writeHead(301,
       {
@@ -549,6 +564,8 @@ module.exports = {
     res.end();
   },
   paymentErrorPartial: async function (req, res) {
+    const time1 = performance.now();
+
     console.log(finalError);
     res.writeHead(301,
       {

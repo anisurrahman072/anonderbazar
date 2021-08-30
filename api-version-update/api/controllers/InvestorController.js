@@ -4,6 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
+const {performance} = require('perf_hooks');
 
 const {pagination} = require('../../libs/pagination');
 const {NOT_VERIFIED_INVESTOR_OTP_STATUS, VERIFIED_INVESTOR_OTP_STATUS, EXPIRED_INVESTOR_OTP_STATUS} = require('../../libs/constants');
@@ -14,6 +15,8 @@ const Promise = require('bluebird');
 module.exports = {
   generateOtp: async (req, res) => {
     try{
+      const time1 = performance.now();
+
       let otp = '';
       const allChars = '0123456789';
       for (let i = 0; i < 6; i++) {
@@ -44,6 +47,9 @@ module.exports = {
         });
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Successfully created the OTP for the given phone number',
@@ -51,6 +57,8 @@ module.exports = {
       });
     }
     catch (error){
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error occurred while generating OTP for investor',
@@ -61,6 +69,8 @@ module.exports = {
 
   verifyOTP: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let otpInfo = await InvestorOTP.findOne({
         phone: req.body.phone,
         status: NOT_VERIFIED_INVESTOR_OTP_STATUS,
@@ -92,6 +102,9 @@ module.exports = {
         });
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Successfully verified OTP'
@@ -99,6 +112,8 @@ module.exports = {
 
     }
     catch (error){
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error occurred while OTP verification',
@@ -109,6 +124,8 @@ module.exports = {
 
   registerInvestor: async (req, res) => {
     try{
+      const time1 = performance.now();
+
       let data = req.body;
 
       const investorQuery = Promise.promisify(Investor.getDatastore().sendNativeQuery);
@@ -140,6 +157,8 @@ module.exports = {
         }
         catch (error){
           console.log('error in sms:', error);
+          sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
           // throw new Error('Error occurred while sending sms');
         }
 
@@ -148,9 +167,14 @@ module.exports = {
         }
         catch (error){
           console.log('error in email:', error);
+          sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
           // throw new Error('Error occurred while sending email');
         }
       }
+
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json({
         success: true,
@@ -160,6 +184,8 @@ module.exports = {
     }
     catch (error){
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error occurred while registered for investor',
@@ -170,6 +196,8 @@ module.exports = {
 
   getAllInvestor: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let params = req.allParams();
       let paginate = pagination(params);
 
@@ -187,6 +215,9 @@ module.exports = {
         where: _where
       }).limit(paginate.limit).skip(paginate.skip);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Successfully fetched all investors',
@@ -195,6 +226,8 @@ module.exports = {
       });
     }
     catch (error){
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error occurred while fetched all investors',
@@ -206,6 +239,8 @@ module.exports = {
 
   updateInvestorStatus: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let data = req.body;
 
       let updatedInvestor = await Investor.updateOne({
@@ -214,6 +249,9 @@ module.exports = {
         status: data.status
       });
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Successfully updated status of Investor',
@@ -221,6 +259,8 @@ module.exports = {
       });
     }
     catch (error){
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error occurred while updating status of Investor',

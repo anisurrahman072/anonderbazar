@@ -1,12 +1,15 @@
 const _ = require('lodash');
 const {pagination} = require('../../libs/pagination');
 const {imageUploadConfig, deleteImagesLocal, uploadImagesWithConfig} = require('../../libs/helper');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   //Method called for getting all design image list data
   //Model models/DesignImage.js
   getAll: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let _pagination = pagination(req.query);
 
       /* WHERE condition for .......START.....................*/
@@ -56,6 +59,9 @@ module.exports = {
         .populate('product_id')
         .populate('warehouse_id');
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalDesignImage,
@@ -67,6 +73,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All designImage with pagination';
       res.status(400).json({
         success: false,
@@ -79,11 +87,16 @@ module.exports = {
   //Model models/DesignImage.js
   findOne: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let designImage = await DesignImage.findOne({
         where: {
           id: req.params._id
         }
       });
+
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       res.status(200).json({
         success: true,
@@ -92,6 +105,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'error in read single designImage';
       res.status(400).json({
         success: false,
@@ -103,11 +118,18 @@ module.exports = {
   //Method called for creating design image data
   //Model models/DesignImage.js
   create: async (req, res) => {
+    const time1 = performance.now();
+
     async function createDesignImage(body) {
       try {
+        const time2 = performance.now();
+        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.json(200, await DesignImage.create(body));
       } catch (error) {
         console.log(error);
+        sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
         return res.json(err.status, {
           error
         });
@@ -139,6 +161,7 @@ module.exports = {
   //Model models/DesignImage.js
   getAllByProductId: async (req, res) => {
     try {
+      const time1 = performance.now();
 
       let productId = req.params._id;
       let productDesignData = await ProductDesign.find({
@@ -160,6 +183,9 @@ module.exports = {
         })
         .value();
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'get from product designCombination',
@@ -167,6 +193,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'error from designCombination',
@@ -178,6 +206,8 @@ module.exports = {
   //Model models/DesignImage.js
   getSingleDesignCombinationImage: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let designImageData = await DesignImage.findOne({
         where: {
           product_id: req.params._id,
@@ -186,6 +216,9 @@ module.exports = {
         }
       });
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'get design image by designCombination',
@@ -193,6 +226,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'error in get design image by designCombination',
@@ -204,6 +239,8 @@ module.exports = {
   //Model models/DesignImage.js
   updateByProductId: async (req, res) => {
     try {
+      const time1 = performance.now();
+
 
       let warehouseId = req.token.userInfo.warehouse_id.id;
 
@@ -253,6 +290,9 @@ module.exports = {
           console.log(error1);
         }
 
+        const time2 = performance.now();
+        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.status(200).json({
           success: true,
           data: updated[0]
@@ -266,6 +306,9 @@ module.exports = {
           warehouse_id: warehouseId
         }).fetch();
 
+        const time2 = performance.now();
+        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.status(200).json({
           success: true,
           message: 'get from designImages updateByProductId',
@@ -274,6 +317,8 @@ module.exports = {
       }
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'error from designimages updateByProductId',

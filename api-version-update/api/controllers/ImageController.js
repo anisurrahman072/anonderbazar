@@ -4,11 +4,16 @@
  * @description :: Server-side logic for managing images
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
+const {performance} = require('perf_hooks');
 
 const {uploadImages, deleteImageS3} = require('../../libs/helper');
 module.exports = {
   //Method called for sending a image data
   sendImage: function (req, res) {
+    const time1 = performance.now();
+
+    const time2 = performance.now();
+    sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
     res.attachment('images/ec2d14ab-03e8-47ba-9437-497e64834a0b.jpg');
     res.send();
@@ -16,19 +21,28 @@ module.exports = {
   //Method called for uploading a image data
   upload: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       if (req.method === 'GET') {
         return res.json({'status': 'GET not allowed'});
       }
       const files = await uploadImages(req.file('imageFile'));
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({files: files});
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(error.status).json({'Error': error});
     }
   },
 
   insertImage: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       if (!req.file('image')) {
         return res.status(400).json({success: false, message: 'No image uploaded!'});
       }
@@ -37,6 +51,9 @@ module.exports = {
 
       console.log('newImagePath: ', newImagePath);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         path: newImagePath
@@ -44,6 +61,8 @@ module.exports = {
 
     } catch (error) {
       console.log('Error occurred!');
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'Error occurred while inserting new image in database!'
@@ -53,6 +72,8 @@ module.exports = {
 
   deleteImage: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       if (!req.body.oldImagePath) {
         return res.status(400).json({success: false, message: 'No image path was given to delete!'});
       }
@@ -108,6 +129,9 @@ module.exports = {
         console.log('updatedResult: ', updatedResult);
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'Successfully deleted image'
@@ -115,6 +139,8 @@ module.exports = {
 
     } catch (error) {
       console.log('Error occurred in deleting order!', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: error

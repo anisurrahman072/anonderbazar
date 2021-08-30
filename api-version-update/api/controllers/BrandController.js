@@ -5,20 +5,28 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 const {uploadImages} = require('../../libs/helper');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   // get all brands
   getAll: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let allBrands = await Brand.find({
         deletedAt: null
       }).sort([
         {frontend_position: 'ASC'}
       ]);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(allBrands);
     }
     catch (error){
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: error
@@ -29,9 +37,16 @@ module.exports = {
   // destroy a row
   destroy: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const brand = await Brand.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(200, brand);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.json(400, {message: 'wrong', error});
     }
   },
@@ -42,6 +57,8 @@ module.exports = {
     const authUser = req.token.userInfo;
     const isVendor = authUser.group_id.name === 'owner';
     try {
+      const time1 = performance.now();
+
       let body = req.body;
       if (body.hasImage === 'true') {
 
@@ -68,9 +85,14 @@ module.exports = {
       body.slug = stringForMakingSlug;
       const returnBrand = await Brand.create(body).fetch();
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(200, returnBrand);
 
     } catch (err) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.json(400, {message: 'something wrong', err});
     }
   },
@@ -81,6 +103,8 @@ module.exports = {
   update: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       let body = req.body;
       if (body.hasImage === 'true') {
 
@@ -103,14 +127,21 @@ module.exports = {
       body.slug = stringForMakingSlug;
       const brand = await Brand.updateOne({id: req.param('id')}).set(body);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(brand);
 
     } catch (err) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({message: 'Something Went Wrong', err});
     }
   },
   uniqueCheckName: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const ignoreId = parseInt(req.body.ignore_id, 10);
       const where = {
         name: req.param('name')
@@ -122,6 +153,10 @@ module.exports = {
 
       console.log(where, ignoreId);
       let exists = await Brand.find(where);
+
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       if (exists && exists.length > 0) {
         return res.status(200).json({isunique: false});
       } else {
@@ -129,6 +164,8 @@ module.exports = {
       }
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({isunique: true});
     }
   }

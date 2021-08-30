@@ -7,12 +7,16 @@
 
 
 const {asyncForEach} = require('../../libs/helper');
+const {performance} = require('perf_hooks');
+
 module.exports = {
 
   //Method called for creating a product design
   //Model models/ProductDesign.js
   create: async (req, res) => {
     try {
+      const time1 = performance.now();
+
 
       let productDesign = await ProductDesign.create(req.body).fetch();
       if (productDesign) {
@@ -52,6 +56,8 @@ module.exports = {
   //Model models/ProductDesign.js
   update: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let productDesign = await ProductDesign.updateOne({id: req.param('id')}, req.body);
       if (productDesign) {
 
@@ -93,6 +99,8 @@ module.exports = {
   // destroy a row
   destroy: function (req, res) {
     try {
+      const time1 = performance.now();
+
       const productDesign = ProductDesign.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
       return res.json(200, {productDesign: productDesign});
     } catch (error) {

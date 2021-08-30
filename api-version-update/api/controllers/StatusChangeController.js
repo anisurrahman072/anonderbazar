@@ -8,9 +8,12 @@ const moment = require('moment');
 const {ORDER_STATUSES} = require('../../libs/orders');
 const {ORDER_STATUSES_INDEX} = require('../../libs/orders');
 const {SUB_ORDER_STATUSES_INDEX} = require('../../libs/subOrders');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   currentTime: (req, res) => {
+    const time1 = performance.now();
+
     return res.json({
       currentTime: moment().format('YYYY-MM-DD HH:mm:ss')
     });
@@ -18,6 +21,7 @@ module.exports = {
   //Method called for changing product order status
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
   updatecustom: async (req, res) => {
+    const time1 = performance.now();
 
     const allSubOrderStatuses = Object.keys(SUB_ORDER_STATUSES_INDEX).map(key=>parseInt(key, 10));
     const allOrderStatuses = Object.keys(ORDER_STATUSES_INDEX).map(key=>parseInt(key, 10));
@@ -62,6 +66,8 @@ module.exports = {
   updatecustomcourier: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       let order = await Order.find({where: {id: body.order_id}})
         .populate('billing_address')
         .populate('shipping_address')

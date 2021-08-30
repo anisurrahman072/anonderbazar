@@ -6,12 +6,15 @@
  */
 const {pagination} = require('../../libs/pagination');
 const {uploadImages} = require('../../libs/helper');
+const {performance} = require('perf_hooks');
 const Promise = require('bluebird');
 module.exports = {
   //Method called for getting all warehouse data
   //Model models/Warehouse.js
   getAll: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const warehouseQuery = Promise.promisify(Warehouse.getDatastore().sendNativeQuery);
       let _pagination = pagination(req.query);
 
@@ -89,6 +92,8 @@ module.exports = {
   //Model models/Warehouse.js
   destroy: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       await Warehouse.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
 
       await User.update({warehouse_id: req.param('id')}).set({deletedAt: new Date()});
@@ -112,6 +117,8 @@ module.exports = {
   //Model models/Warehouse.js
   createCustom: async (req, res) => {
     try {
+      const time1 = performance.now();
+
 
       console.log(req.body);
       let postBody = {...req.body};
@@ -191,6 +198,8 @@ module.exports = {
   //Model models/Warehouse.js
   updateCustom: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       console.log('update warehouse', req.body);
       let postBody = {...req.body};
 
@@ -264,6 +273,8 @@ module.exports = {
 
   updateUserStatus: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const status = req.body.status;
       await Warehouse.updateOne({id: req.param('id')}).set({status: status});
 

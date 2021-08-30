@@ -7,10 +7,13 @@
 
 const moment = require('moment');
 const {pagination} = require('../../libs/pagination');
+const {performance} = require('perf_hooks');
 
 module.exports = {
 
   massInsert: async (req, res) => {
+
+    const time1 = performance.now();
 
     console.log(req.body);
 
@@ -66,6 +69,8 @@ module.exports = {
   //Model models/PRStatus.js
   create: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       req.body.date = moment(req.body.date).format('YYYY-MM-DD HH:mm:ss');
       let data = await PRStatus.create(req.body).fetch();
       if (data) {
@@ -81,6 +86,8 @@ module.exports = {
 
   getAll: async (req, res) => {
     try{
+      const time1 = performance.now();
+
       let _pagination = pagination(req.query);
       let _where = {};
       _where.deletedAt = null;

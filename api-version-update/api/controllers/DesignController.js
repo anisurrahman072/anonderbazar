@@ -4,6 +4,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 const {uploadImagesWithConfig} = require('../../libs/helper');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   //Method called for creating design data
@@ -11,6 +12,8 @@ module.exports = {
   create: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       if (req.body.hasImage === 'true') {
         try {
           const uploaded = await uploadImagesWithConfig(req.file('image'), {saveAs: Date.now() + '_design.jpg'});
@@ -22,12 +25,19 @@ module.exports = {
 
         } catch (err) {
           console.log('err', err);
+          sails.log.error(`Request Uri: ${req.path} ########## ${err}`);
+
           return res.json(err.status, {err: err});
         }
       }
       const design = await Design.create(req.body).fetch();
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(200, design);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: '',
@@ -39,6 +49,8 @@ module.exports = {
   //Model models/Design.js
   update: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       if (req.body.hasImage === 'true') {
         try {
           const uploaded = await uploadImagesWithConfig(req.file('image'), {saveAs: Date.now() + '_design.jpg'});
@@ -50,12 +62,19 @@ module.exports = {
 
         } catch (err) {
           console.log('err', err);
+          sails.log.error(`Request Uri: ${req.path} ########## ${err}`);
+
           return res.json(err.status, {err: err});
         }
       }
       const design = await Design.updateOne({id: req.param('id')}).set(req.body);
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(200, design);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: '',
@@ -67,9 +86,16 @@ module.exports = {
   // destroy a row
   destroy: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const design = await Design.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(design);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: '',

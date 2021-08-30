@@ -11,6 +11,7 @@ const {performance} = require('perf_hooks');
 
 module.exports = {
   removeImage: async (req, res) => {
+    const time1 = performance.now();
 
     const type = req.param('type');
     const id = req.param('id');
@@ -21,11 +22,16 @@ module.exports = {
       }).set({
         [type]: null
       });
+
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(201).json({
         message: true
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       res.status(400).json({message: 'server problem!', error});
     }
 

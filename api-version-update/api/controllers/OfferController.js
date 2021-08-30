@@ -18,6 +18,8 @@ module.exports = {
   /**Method for getting all the shop, brand and category to add a new offer on a particular shop, brand or category */
   getAllOptions: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       /**checking if the options have the offer time or not*/
       /*await OfferService.offerDurationCheck();*/
 
@@ -43,6 +45,9 @@ module.exports = {
         allOptions = await Category.find({deletedAt: null, parent_id: parseInt(req.query.subCatId), type_id: 2});
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'Get all options for shop / brand / category',
@@ -50,6 +55,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'failed in Getting all options for shop / brand / category',
@@ -62,6 +69,8 @@ module.exports = {
   /**Model models/Offer.js*/
   offerInsert: async function (req, res) {
     try {
+      const time1 = performance.now();
+
       let body = {...req.body};
       let upload_type = body.upload_type ? body.upload_type : '';
 
@@ -228,6 +237,9 @@ module.exports = {
         }
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Offer created successfully',
@@ -237,6 +249,8 @@ module.exports = {
 
     } catch (error) {
       console.log('error in insert offer: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error in creating the offer',
@@ -249,6 +263,8 @@ module.exports = {
   /**Model models/Offer.js*/
   allRegularOffer: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       /*await OfferService.offerDurationCheck();*/
 
       let _pagination = pagination(req.query);
@@ -267,6 +283,9 @@ module.exports = {
 
       let totalRegularOffer = await Offer.count().where(_where);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalRegularOffer,
@@ -279,6 +298,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Failed to get all regular offers with pagination';
       res.status(400).json({
         success: false,
@@ -292,6 +313,8 @@ module.exports = {
   /** model: RegularOfferProducts.js */
   destroy: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const regularOffer = await Offer.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
       const regularOfferInfo = await Offer.findOne({id: req.param('id')});
       if (regularOfferInfo.selection_type === 'Product wise') {
@@ -300,9 +323,14 @@ module.exports = {
       if (regularOfferInfo.selection_type === 'individual_product') {
         await RegularOfferProducts.update({regular_offer_id: req.param('id')}).set({deletedAt: new Date()});
       }
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(201).json(regularOffer);
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         message: 'Failed to delete a regular offer',
         error
@@ -313,6 +341,8 @@ module.exports = {
   /** Method called to get a regular offer in order to edit in admin section */
   getRegularOfferById: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       /*await OfferService.offerDurationCheck();*/
       let regularOffer = await Offer.findOne({id: req.query.id, deletedAt: null})
         .populate('category_id')
@@ -321,6 +351,9 @@ module.exports = {
         .populate('brand_id')
         .populate('vendor_id');
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'Regular Offer data by id',
@@ -328,6 +361,8 @@ module.exports = {
       });
     } catch (error) {
       console.log('error in getRegularOfferById: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'failed to get regular offer by id',
@@ -339,6 +374,8 @@ module.exports = {
   /** Method called in the admin to see the products exists under an offer */
   getRelatedOfferProducts: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       /*await OfferService.offerDurationCheck();*/
       let _pagination = pagination(req.query);
       let rawSQL = `
@@ -360,6 +397,9 @@ module.exports = {
         product_deactivation_time: null
       });
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'All products with detail info related to this regular offer',
@@ -368,6 +408,8 @@ module.exports = {
       });
     } catch (error) {
       console.log('getRelatedOfferProducts error: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'Failed to get related offer products',
@@ -379,6 +421,8 @@ module.exports = {
   /** Method called in admin section to get the individual offered products under an offer */
   getRelatedOfferIndividualProducts: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       /*await OfferService.offerDurationCheck();*/
       let _pagination = pagination(req.query);
       let rawSQL = `
@@ -400,6 +444,9 @@ module.exports = {
         product_deactivation_time: null
       });
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'All individual products with detail info related to this regular offer',
@@ -408,6 +455,8 @@ module.exports = {
       });
     } catch (error) {
       console.log('getRelatedOfferProducts error: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'Failed to get related offer individual products',
@@ -419,13 +468,20 @@ module.exports = {
   /** Method called in admin section to remove a single product from an offer: product wise */
   removeProductFromOffer: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const removedProduct = await RegularOfferProducts.updateOne({
         product_id: req.query.productId,
         regular_offer_id: req.query.offerId
       }).set({deletedAt: new Date(), product_deactivation_time: new Date()});
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(201).json(removedProduct);
     } catch (error) {
       console.log('removeProductFromOffer error: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         message: 'Failed to delete the offered product'
       });
@@ -435,13 +491,20 @@ module.exports = {
   /** Method called in admin section to remove a single product from an offer: individual_product */
   removeIndividualProductFromOffer: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const removedProduct = await RegularOfferProducts.updateOne({
         product_id: req.query.productId,
         regular_offer_id: req.query.offerId
       }).set({deletedAt: new Date(), product_deactivation_time: new Date()});
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(201).json(removedProduct);
     } catch (error) {
       console.log('removeIndividualProductFromOffer error: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         message: 'Failed to delete the offered product'
       });
@@ -451,6 +514,8 @@ module.exports = {
   /** Method called in admin to update an offer */
   updateOffer: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let body = {...req.body};
       let upload_type = body.upload_type ? body.upload_type : '';
 
@@ -698,6 +763,9 @@ module.exports = {
         }
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Offer updated successfully',
@@ -706,6 +774,8 @@ module.exports = {
 
     } catch (error) {
       console.log('updateOffer error: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'Failed to update the offer',
@@ -717,6 +787,7 @@ module.exports = {
   /** Method called in admin to show the already selected products when products are being selected to add to an offer */
   getSelectedProductsInfo: async (req, res) => {
     try {
+      const time1 = performance.now();
 
       if (!req.query.data) {
         return res.status(422).json({
@@ -737,6 +808,9 @@ module.exports = {
         }
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Successfully fetched selected products with their detail info',
@@ -744,6 +818,8 @@ module.exports = {
       });
     } catch (error) {
       console.log('error: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'failed to get selected products info',
@@ -755,6 +831,8 @@ module.exports = {
   /** Method called from admin to change to the status of an offer */
   activeStatusChange: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       if (req.body.event) {
         await Offer.updateOne({id: req.body.offerId}).set({offer_deactivation_time: null});
         const regularOfferInfo = await Offer.findOne({id: req.body.offerId});
@@ -773,12 +851,17 @@ module.exports = {
         }
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'Successfully updated offer status',
       });
     } catch (error) {
       console.log('error: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'failed to update offer status',
@@ -790,6 +873,8 @@ module.exports = {
   /**Method called from the web to get the regular offer data*/
   webRegularOffers: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       /*await OfferService.offerDurationCheck();*/
 
       let webRegularOffers =  await sails.helpers.cacheRead('getWebRegularOffers');
@@ -798,6 +883,9 @@ module.exports = {
         throw new Error('webRegularOffers not found!');
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'All regular offers for the web',
@@ -805,6 +893,8 @@ module.exports = {
       });
     } catch (error) {
       console.log('error: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'failed to get regular offer for the web',
@@ -819,6 +909,8 @@ module.exports = {
     const brandId = parseInt(req.query.brandId);
 
     try {
+      const time1 = performance.now();
+
       /*await OfferService.offerDurationCheck();*/
       let webRegularOfferedProducts;
 
@@ -1012,6 +1104,9 @@ module.exports = {
         });
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'All regular offers for the web with related products data',
@@ -1019,6 +1114,8 @@ module.exports = {
       });
     } catch (error) {
       console.log('error: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'failed to get regular offer for the web with related products data',
@@ -1032,6 +1129,7 @@ module.exports = {
   getAllOfferedProducts: async (req, res) => {
     try {
       const time1 = performance.now();
+
       const finalCollectionOfProducts = await sails.helpers.cacheRead('getAllOfferedProducts');
       // console.log('######### getAllOfferedProducts from cache ############', finalCollectionOfProducts);
       if(!finalCollectionOfProducts){
@@ -1039,7 +1137,7 @@ module.exports = {
       }
 
       const time2 = performance.now();
-      console.log(`getAllOfferedProducts Time Elapsed: ${(time2 - time1) / 1000} seconds.`);
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json({
         success: true,
@@ -1048,6 +1146,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         message: 'Failed to fetch all existing offered products',
         error
@@ -1058,6 +1158,8 @@ module.exports = {
   /** Method called to check the validity of the codes input by the admin for adding to the individual product offer */
   checkIndividualProductsCodesValidity: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let invalidCodes = [];
       let codes = req.body + '';
       codes = codes.split(',');
@@ -1070,12 +1172,18 @@ module.exports = {
       }
 
       if (invalidCodes && invalidCodes.length > 0) {
+        const time2 = performance.now();
+        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.status(200).json({
           success: true,
           message: 'Invalid codes found',
           data: invalidCodes
         });
       } else {
+        const time2 = performance.now();
+        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.status(200).json({
           success: true,
           message: 'Every code is valid',
@@ -1083,6 +1191,8 @@ module.exports = {
       }
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         message: 'Failed to check Individual Products Code Validity',
         error
@@ -1093,6 +1203,7 @@ module.exports = {
   /** Method called to create an empty excel sheet as a sample file to add products individually in the offer */
   generateExcel: async (req, res) => {
     try {
+      const time1 = performance.now();
 
       // Create a new instance of a Workbook class
       const wb = new xl.Workbook({
@@ -1171,8 +1282,13 @@ module.exports = {
 
       wb.write('Excel-' + Date.now() + '.xlsx', res);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
     } catch (error) {
       console.error(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'error in generating excel',
@@ -1185,6 +1301,8 @@ module.exports = {
    *  edit to see the existing offered products and to modify them if the user want */
   generateOfferedExcel: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const wb = new xl.Workbook({
         jszip: {
           compression: 'DEFLATE',
@@ -1310,8 +1428,13 @@ module.exports = {
 
       wb.write('Excel-' + Date.now() + '.xlsx', res);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All products with excel';
       res.status(400).json({
         success: false,
@@ -1324,6 +1447,8 @@ module.exports = {
   /** Method for fetching offered products brands => used in web*/
   getOfferedProductsBrands: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let presentTime = moment().format('YYYY-MM-DD HH:mm:ss');
 
       let _where = {};
@@ -1498,6 +1623,9 @@ module.exports = {
         brands = rawBrands.rows;
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'successfully fetched all the brands in this offer',
@@ -1506,6 +1634,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         message: 'Failed to fetch all the brands in this offer',
         error

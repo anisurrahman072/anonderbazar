@@ -6,6 +6,8 @@
  */
 
 const {isResourceOwner} = require('../../libs/check-permissions');
+const {performance} = require('perf_hooks');
+
 module.exports = {
 
   //Method called for deleting cart item data

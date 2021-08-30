@@ -7,11 +7,15 @@
 
 const {asyncForEach} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
+const {performance} = require('perf_hooks');
+
 module.exports = {
   //Method called for getting all product type categories
   //Model models/Category.js
   getAll: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let _pagination = pagination(req.query);
 
       /* WHERE condition for .............START ...............................*/
@@ -73,6 +77,8 @@ module.exports = {
   //Model models/Category.js
   withProductSubcategory: async (req, res) => {
     try {
+      const time1 = performance.now();
+
 
       let _pagination = pagination(req.query);
 

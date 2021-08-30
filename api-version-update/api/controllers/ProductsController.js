@@ -15,12 +15,15 @@ const {
 const {asyncForEach, escapeExcel} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
 const moment = require('moment');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   //Method called for getting all products
   //Model models/Product.js
   index: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const productQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
 
       let _pagination = pagination(req.query);
@@ -203,6 +206,8 @@ module.exports = {
   findOne: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       let product = await Product.findOne({
         where: {
           id: req.params._id
@@ -228,6 +233,8 @@ module.exports = {
   //Model models/Product.js,models/ProductDesign.js,models/CraftmanPrice.js
   designCombination: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let productDesignData = await ProductDesign.find({
         where: {product_id: req.params._id, deletedAt: null}
       })
@@ -286,6 +293,8 @@ module.exports = {
   //Model models/Product.js
   search: async (req, res) => {
     try {
+
+      const time1 = performance.now();
 
       let _pagination = pagination(req.query);
 
@@ -419,6 +428,8 @@ module.exports = {
   getBySearchTerm: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       let _pagination = pagination(req.query);
 
       let _where = {
@@ -479,6 +490,8 @@ module.exports = {
   generateExcel: async (req, res) => {
 
     try {
+
+      const time1 = performance.now();
 
       const authUser = req.token.userInfo;
 
@@ -594,6 +607,8 @@ module.exports = {
   bulkUpload: async (req, res) => {
 
     try {
+
+      const time1 = performance.now();
 
       const authUser = req.token.userInfo;
 
@@ -747,6 +762,8 @@ module.exports = {
   },
 
   productExcel: async (req, res) => {
+
+    const time1 = performance.now();
 
     if ((!req.query.type_id || req.query.type_id === 'null') && (!req.query.warehouse_id || req.query.warehouse_id === 'null')) {
       return res.status(404).json({
@@ -1168,6 +1185,8 @@ module.exports = {
 
   bulkUpdate: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let count = 0;
       const authUser = req.token.userInfo;
       const len = req.body.length;
@@ -1435,6 +1454,8 @@ module.exports = {
 
   getProductsByName: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
       let rawSelect = `
     SELECT
@@ -1477,7 +1498,8 @@ module.exports = {
 
   getByCategorySubCategory: async (req, res) => {
     try {
-      console.log('tttttaa');
+      const time1 = performance.now();
+
       const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
       let rawSelect = `
         SELECT

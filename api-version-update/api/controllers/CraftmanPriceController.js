@@ -6,12 +6,16 @@
  */
 
 const {asyncForEach} = require('../../libs/helper');
+const {performance} = require('perf_hooks');
+
 module.exports = {
 
   //Method called for creating craftsman price data
   //Model models/CraftmanPrice.js
   create: async (req, res) => {
     try {
+      const time1 = performance.now();
+
 
       let craftmanPrice = await CraftmanPrice.create(req.body).fetch();
 
@@ -36,6 +40,9 @@ module.exports = {
         .populate('genre_id')
         .populate('warehouse_id');
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         status: true,
         message: 'create craftman price',
@@ -43,6 +50,8 @@ module.exports = {
       });
 
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         error
@@ -54,6 +63,8 @@ module.exports = {
   //Model models/CraftmanPrice.js
   update: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let craftmanPrice = await CraftmanPrice.updateOne({id: req.param('id')})
         .set(req.body)
         .fetch();
@@ -83,6 +94,9 @@ module.exports = {
 
       });
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         status: true,
         message: 'update Craftman Price',
@@ -90,6 +104,8 @@ module.exports = {
       });
 
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'error in CraftmanPrice/update',
@@ -102,6 +118,8 @@ module.exports = {
   getCraftsmanPriceDesign: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
 
       let _where = {};
       _where.deletedAt = null;
@@ -141,12 +159,17 @@ module.exports = {
           return item;
         })
       );
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'Get All CraftmanPrice  with pagination',
         pricedata: allPrice
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All CraftmanPrice with pagination';
       res.status(400).json({
         success: false,
@@ -160,9 +183,16 @@ module.exports = {
   // destroy a row
   destroy: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const craftmanPrice = await CraftmanPrice.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(200, craftmanPrice);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       console.log(error);
       res.json(400, {success: false, message: 'Something went wrong!', error});
     }

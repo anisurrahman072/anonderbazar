@@ -6,6 +6,7 @@
  */
 
 const {pagination} = require('../../libs/pagination');
+const {performance} = require('perf_hooks');
 
 module.exports = {
 
@@ -14,6 +15,8 @@ module.exports = {
 
   getAllGroups: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let _pagination = pagination(req.query);
 
       let rawSQL = `
@@ -61,6 +64,8 @@ module.exports = {
   /**model: Group.js*/
   deleteGroup: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const group = await Group.updateOne({id: req.query.id}).set({deletedAt: new Date()});
       return res.json(200, group);
     } catch (error) {
@@ -77,6 +82,8 @@ module.exports = {
 
   getAllGroupsPermissions: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let rawSQL = `
       SELECT
             GROUP_CONCAT(perm_key) AS perm_keys,
@@ -112,6 +119,8 @@ module.exports = {
   /**Model models/Group.js*/
   groupInsert: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let body = {};
 
       body.name = req.body.name;
@@ -140,6 +149,8 @@ module.exports = {
   /**Model models/Group.js*/
   getGroupsById: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let group = await Group.findOne({id: req.query.id});
       res.status(200).json({
         success: true,
@@ -162,6 +173,8 @@ module.exports = {
   groupUpdate: async (req, res) => {
     console.log('req.here: ');
     try {
+      const time1 = performance.now();
+
       let body = {};
 
       id = req.query.id;
@@ -191,6 +204,8 @@ module.exports = {
   /**Model models/Group.js*/
   checkGroupName: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       if (!req.body.groupName) {
         return res.status(422).json({
           success: false,

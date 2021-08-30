@@ -14,11 +14,17 @@ const _ = require('lodash');
 const xl = require('excel4node');
 const {escapeExcel} = require('../../libs/helper');
 const {columnsOfIndividualOfferProducts} = require('../../libs/offer');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   getAnonderJhor: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let anonderJhorData = await AnonderJhor.findOne({id: 1});
+
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json({
         success: true,
@@ -27,6 +33,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         message: 'Failed to get AnonderJhor Data',
         error
@@ -36,6 +44,8 @@ module.exports = {
 
   jhorActiveStatusChange: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let anonderJhorData = await AnonderJhor.findOne({id: 1});
 
       const endDate = moment(anonderJhorData.end_date);
@@ -68,6 +78,9 @@ module.exports = {
 
       const jhorStatus = await AnonderJhor.updateOne({id: 1}).set({status: req.body});
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'AnonderJhor status changed successfully',
@@ -75,6 +88,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         message: 'Failed to change AnonderJhor status',
         error
@@ -85,6 +100,8 @@ module.exports = {
   updateAnonderJhor: async (req, res) => {
     /*console.log('the bodty of : ', req.body);*/
     try {
+      const time1 = performance.now();
+
       let body = {...req.body};
 
       let jhorData = {
@@ -103,6 +120,9 @@ module.exports = {
 
       let data = await AnonderJhor.updateOne({id: 1}).set(jhorData);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Anonder Jhor has been updated successfully',
@@ -111,6 +131,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         message: 'Failed to update AnonderJhor Data',
         error
@@ -120,6 +142,8 @@ module.exports = {
 
   getAllAnonderJhorOffersData: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       /*await OfferService.anonderJhorOfferDurationCheck();*/
 
       let _pagination = pagination(req.query);
@@ -142,6 +166,9 @@ module.exports = {
 
       let totalAnonderJhorOffersData = await AnonderJhorOffers.count().where(_where);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalAnonderJhorOffersData,
@@ -154,6 +181,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         message: 'Failed to get all Anonder Jhor Offers Data',
         error
@@ -163,6 +192,8 @@ module.exports = {
 
   offerActiveStatusChange: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       /*await OfferService.anonderJhorOfferDurationCheck();*/
 
       const anonderJhorData = await AnonderJhor.findOne({id: 1});
@@ -205,6 +236,9 @@ module.exports = {
         }
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
 
       res.status(200).json({
         success: true,
@@ -213,6 +247,8 @@ module.exports = {
       });
     } catch (error) {
       console.log('error: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'failed to update offer status',
@@ -223,6 +259,8 @@ module.exports = {
 
   offerForceStop: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       /*await OfferService.anonderJhorOfferDurationCheck();*/
 
       let anonderJhorData = await AnonderJhor.findOne({id: 1});
@@ -250,6 +288,9 @@ module.exports = {
         await AnonderJhorOfferedProducts.update({anonder_jhor_offer_id: req.body.offerId}).set({status: 1});
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'Successfully updated offer status',
@@ -257,6 +298,8 @@ module.exports = {
       });
     } catch (error) {
       console.log('error: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'failed to update offer status',
@@ -267,6 +310,8 @@ module.exports = {
 
   deleteAnonderJhorOffer: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body}).set({
         status: 0,
         deletedAt: new Date()
@@ -277,6 +322,9 @@ module.exports = {
         deletedAt: new Date()
       });
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(201).json({
         success: true,
         message: 'Successfully deleted an anonder jhor offer',
@@ -284,6 +332,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         message: 'Failed to delete an anonder jhor offer',
         error
@@ -294,6 +344,8 @@ module.exports = {
   anonderJhorOfferInsert: async (req, res) => {
     /*console.log('anonderjhor insert: body', req.body);*/
     try {
+      const time1 = performance.now();
+
       let body = {...req.body};
 
       let offerData = {
@@ -369,6 +421,9 @@ module.exports = {
         }
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Anonder jhor Offer has been created successfully',
@@ -377,6 +432,8 @@ module.exports = {
 
     } catch (error) {
       console.log('error in insert offer: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error in creating the Anonder jhor  offer',
@@ -387,7 +444,13 @@ module.exports = {
 
   getAllCategories: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let allCategories = await Category.find({type_id: 2, parent_id: 0, deletedAt: null});
+
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'all categories fetched successfully',
@@ -395,6 +458,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         message: 'Failed to get all categories',
         error
@@ -404,11 +469,16 @@ module.exports = {
 
   getAllSubCategories: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const allSubCategories = await Category.find({
         type_id: 2,
         parent_id: parseInt(req.query.parentId, 10),
         deletedAt: null
       });
+
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json({
         success: true,
@@ -417,6 +487,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         message: 'Failed to get all sub-categories',
         error
@@ -426,11 +498,17 @@ module.exports = {
 
   getAllSubSubCategories: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let allSubSubCategories = await Category.find({
         type_id: 2,
         parent_id: parseInt(req.query.parentId, 10),
         deletedAt: null
       });
+
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'all sub-sub-categories fetched successfully',
@@ -438,6 +516,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         message: 'Failed to get all sub-sub-categories',
         error
@@ -447,11 +527,16 @@ module.exports = {
 
   getAnonderJhorOfferById: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       /*await OfferService.anonderJhorOfferDurationCheck();*/
       let anonderJhorOffer = await AnonderJhorOffers.findOne({id: req.query.id})
         .populate('category_id')
         .populate('sub_category_id')
         .populate('sub_sub_category_id');
+
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       res.status(200).json({
         success: true,
@@ -460,6 +545,8 @@ module.exports = {
       });
     } catch (error) {
       console.log('error in getAnonderJhorOfferById: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'failed to get Anonder Jhor offer by id',
@@ -470,6 +557,8 @@ module.exports = {
 
   updateAnonderJhorOffer: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let body = {...req.body};
 
       let offerData = {
@@ -546,6 +635,9 @@ module.exports = {
         }
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Anonder Jhor Offer updated successfully',
@@ -554,6 +646,8 @@ module.exports = {
 
     } catch (error) {
       console.log('updateOffer error: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'Failed to update Anonder Jhor Offer',
@@ -565,6 +659,8 @@ module.exports = {
 
   getAnonderJhorAndOffers: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       /*await OfferService.anonderJhorOfferDurationCheck();*/
 
       let anonderJhor = await AnonderJhor.findOne({id: 1});
@@ -585,6 +681,9 @@ module.exports = {
           .populate('sub_sub_category_id');
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'All anonder jhor offers for the web',
@@ -592,6 +691,8 @@ module.exports = {
       });
     } catch (error) {
       console.log('error: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'failed to get anonder offer for the web',
@@ -602,6 +703,8 @@ module.exports = {
 
   getAnonderJhorInfo: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       /*await OfferService.anonderJhorOfferDurationCheck();*/
 
       /*let rawSQL = `SELECT * FROM anonder_jhor WHERE id = 1`;
@@ -613,6 +716,9 @@ module.exports = {
         throw new Error('getAnonderJhorInfo not found!');
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'Successfully fetched anonder jhor information',
@@ -620,6 +726,8 @@ module.exports = {
       });
     } catch (error) {
       console.log('error: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'failed to fetched anonder jhor information',
@@ -630,6 +738,8 @@ module.exports = {
 
   getWebAnonderJhorOfferById: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       /*await OfferService.anonderJhorOfferDurationCheck();*/
 
       let webJhorOfferedProducts;
@@ -669,6 +779,9 @@ module.exports = {
         .sort(_sort)
         .populate('product_id');
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'All regular offers for the web with related products data',
@@ -676,6 +789,8 @@ module.exports = {
       });
     } catch (error) {
       console.log('error: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'failed to get regular offer for the web with related products data',
@@ -686,6 +801,8 @@ module.exports = {
 
   generateOfferExcelById: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let offer_type = parseInt(req.query.offer_type, 10);
       let offer_id = parseInt(req.query.offer_id, 10);
       let isRegularIndividualProductOffer = false;
@@ -798,6 +915,9 @@ module.exports = {
           .populate('sub_sub_category_id');
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Offer excel Data fetched successfully',
@@ -805,6 +925,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         message: 'Failed to get offer excel Data',
         error
@@ -816,6 +938,8 @@ module.exports = {
    *  edit to see the existing offered products and to modify them if the user want */
   generateJhorOfferedExcel: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const wb = new xl.Workbook({
         jszip: {
           compression: 'DEFLATE',
@@ -940,8 +1064,13 @@ module.exports = {
 
       wb.write('Excel-' + Date.now() + '.xlsx', res);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All products with excel';
       res.status(400).json({
         success: false,

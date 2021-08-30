@@ -4,7 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
+const {performance} = require('perf_hooks');
 const {pagination} = require('../../libs/pagination');
 module.exports = {
 
@@ -14,6 +14,7 @@ module.exports = {
 
 
     try {
+      const time1 = performance.now();
 
       let _pagination = pagination(req.query);
 
@@ -35,6 +36,9 @@ module.exports = {
         .populate('courier_id')
         .populate('courier_price_id');
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalCourierPrice,
@@ -45,6 +49,8 @@ module.exports = {
         data: courierprices
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All couriers with pagination';
       res.status(400).json({
         success: false,
@@ -57,6 +63,8 @@ module.exports = {
   //Model models/CourierList.js
   findOne: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let courier = await CourierList.findOne({
         where: {
           id: req.params.id
@@ -66,12 +74,17 @@ module.exports = {
         .populate('courier_id')
         .populate('courier_price_id');
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'read single farmer',
         data: courier ? courier : {}
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'error in read single courier';
       res.status(400).json({
         success: false,
@@ -85,6 +98,7 @@ module.exports = {
   courierorder: async (req, res) => {
 
     try {
+      const time1 = performance.now();
 
       let _pagination = pagination(req.query);
 
@@ -101,6 +115,9 @@ module.exports = {
         .populate('courier_id')
         .populate('courier_price_id');
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalCourierPrice,
@@ -111,6 +128,8 @@ module.exports = {
         data: courierprices
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All couriers with pagination';
       res.status(400).json({
         success: false,

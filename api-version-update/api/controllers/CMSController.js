@@ -8,6 +8,7 @@ const _ = require('lodash');
 const {pagination} = require('../../libs/pagination');
 const {uploadImages} = require('../../libs/helper');
 const {imageUploadConfig} = require('../../libs/helper');
+const {performance} = require('perf_hooks');
 
 module.exports = {
 
@@ -16,6 +17,8 @@ module.exports = {
   getAll: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
 
       let queryData = JSON.parse(req.query.where);
 
@@ -35,6 +38,9 @@ module.exports = {
 
       let totalOffer = await CMS.count().where(_where);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalOffer,
@@ -47,6 +53,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in getting all the offers parent and child offers with pagination';
       res.status(400).json({
         success: false,
@@ -58,10 +66,12 @@ module.exports = {
 
   byIds: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       try {
         req.query.ids = JSON.parse(req.query.ids);
       } catch (_) {
-
+        sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       }
 
       console.log(req.query);
@@ -74,11 +84,16 @@ module.exports = {
         return res.status(200).json(cmses);
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(422).json({
         success: false,
         message: 'Invalid'
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         error
@@ -88,9 +103,16 @@ module.exports = {
   // destroy a row
   destroy: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const cms = await CMS.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(201).json(cms);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       console.log(error);
       res.json(400, {message: 'Something went wrong!', error});
     }
@@ -214,11 +236,15 @@ module.exports = {
   //Model models/CMS.js
   offerProductUpdate: async (req, res) => {
     try {
+      const time1 = performance.now();
 
       let data = await CMS.updateOne({id: req.body.id}).set({
         data_value: req.body.data_value
       });
       console.log('dasta: ', data);
+
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json({
         success: true,
@@ -226,6 +252,8 @@ module.exports = {
         data
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.json(400, {
         success: false,
         message: 'Error Occurred',
@@ -415,6 +443,8 @@ module.exports = {
   //Model models/CMS.js
   customPostInsert: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       if (req.body.hasImage === 'true') {
         req.file('image').upload(imageUploadConfig(), async (err, uploaded) => {
           if (err) {
@@ -479,6 +509,9 @@ module.exports = {
         }
 
         let data = await CMS.create(_payload).fetch();
+        const time2 = performance.now();
+        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.json({
           success: true,
           message: 'cms updated successfully',
@@ -486,6 +519,8 @@ module.exports = {
         });
       }
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.json(400, {
         success: false,
         message: 'Error Occurred',
@@ -500,6 +535,8 @@ module.exports = {
 
   customPostUpdate: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let cms = await CMS.findOne({id: req.body.id, deletedAt: null});
 
       if (req.body.hasImage === 'true') {
@@ -579,6 +616,9 @@ module.exports = {
 
         let data = await CMS.updateOne({id: cms.id}).set(payload);
 
+        const time2 = performance.now();
+        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.json({
           success: true,
           message: 'cms updated successfully',
@@ -586,6 +626,8 @@ module.exports = {
         });
       }
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       console.log('customPostUpdate-error: ', error);
       res.status(error.status).json({
         success: false,
@@ -599,6 +641,8 @@ module.exports = {
   //Model models/CMS.js
   customInsert: async (req, res) => {
     try {
+
+      const time1 = performance.now();
 
       let cms = await CMS.findOne({id: req.body.id});
 
@@ -653,6 +697,9 @@ module.exports = {
 
       let data = await CMS.updateOne({id: cms.id}).set(_payload);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json({
         success: true,
         message: 'cms updated successfully',
@@ -661,6 +708,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error Occurred',
@@ -670,6 +719,8 @@ module.exports = {
   },
   uploadCarouselImage: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let cms = await CMS.findOne({id: req.param('id'), deletedAt: null});
 
       const uploaded = await uploadImages(req.file('image'));
@@ -697,6 +748,9 @@ module.exports = {
         data_value: dataValue
       });
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json({
         success: true,
         message: 'Image successfully uploaded and inserted',
@@ -705,6 +759,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error Occurred',
@@ -715,6 +771,8 @@ module.exports = {
   deleteCarouselImage: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       let cms = await CMS.findOne({id: req.param('id'), deletedAt: null});
       let dataValueIndex = parseInt(req.body.dataValueId, 10);
       let dataValue = cms.data_value;
@@ -733,6 +791,9 @@ module.exports = {
         data_value: dataValue
       });
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json({
         success: true,
         message: 'Image successfully removed',
@@ -741,6 +802,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error Occurred',
@@ -752,6 +815,8 @@ module.exports = {
   //Model models/CMS.js
   customUpdate: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       console.log('req.body', req.body);
       if (!req.body.id) {
         return res.status(422).json({
@@ -830,6 +895,9 @@ module.exports = {
           data_value: dataValue
         });
 
+        const time2 = performance.now();
+        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.status(201).json({
           success: true,
           message: 'cms updated successfully',
@@ -839,6 +907,8 @@ module.exports = {
       }
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error Occurred',
@@ -851,6 +921,8 @@ module.exports = {
 
   customDelete: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       console.log('body: ', req.body);
 
       let cms = await CMS.findOne({id: req.body.id, deletedAt: null});
@@ -859,6 +931,9 @@ module.exports = {
       cms.data_value.splice(dataValueIndex, 1);
 
       let data = await CMS.updateOne({id: cms.id}).set({data_value: cms.data_value});
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'cms element deleted successfully',
@@ -866,6 +941,8 @@ module.exports = {
       });
     } catch (error) {
       console.log('error: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.json(400, {
         success: false,
         message: 'Error Occurred',

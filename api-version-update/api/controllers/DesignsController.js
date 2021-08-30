@@ -4,13 +4,15 @@
  * @description :: Server-side logic for managing categories
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-
+const {performance} = require('perf_hooks');
 const {pagination} = require('../../libs/pagination');
 module.exports = {
   //Method called for getting all design image list data
   //Model models/DesignImage.js
   getAll: async (req, res) => {
     try {
+      const time1 = performance.now();
+
 
       let _pagination = pagination(req.query);
 
@@ -46,6 +48,9 @@ module.exports = {
         .populate('product_id')
         .populate('warehouse_id');
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         total: totalDesign,
@@ -56,6 +61,8 @@ module.exports = {
         data: designs
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All design with pagination';
       res.status(400).json({
         success: false,

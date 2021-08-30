@@ -7,12 +7,15 @@
 
 const Promise = require('bluebird');
 const {pagination} = require('../../libs/pagination');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   //Method called for getting all product categories data
   //Model models/Category.js
   getAll: async (req, res) => {
     try {
+      const time1 = performance.now();
+
 
       let _pagination = pagination(req.query);
 
@@ -54,6 +57,9 @@ module.exports = {
       })
         .populate('offer_id');
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         total: totalCategory,
@@ -64,6 +70,8 @@ module.exports = {
         data: categories
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All category with pagination';
       return res.status(400).json({
         success: false,
@@ -76,6 +84,8 @@ module.exports = {
   //Model models/Category.js
   withProductSubcategory: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const categoryNativeQuery = Promise.promisify(Category.getDatastore().sendNativeQuery);
       let _pagination = pagination(req.query);
 
@@ -134,6 +144,9 @@ module.exports = {
         allCategories = rawResult.rows;
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         total: totalCategories,
@@ -147,6 +160,8 @@ module.exports = {
     } catch (error) {
 
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: '',

@@ -17,32 +17,46 @@ const {
   bKashCancelAgreement
 } = require('../../libs/bkashHelper.js');
 const logger = require('../../libs/softbd-logger').Logger;
+const {performance} = require('perf_hooks');
 
 module.exports = {
 
   authUserWallets: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const authUser = req.token.userInfo;
       const userWallets = await BkashCustomerWallet.find({
         user_id: authUser.id,
         row_status: 3,
         deletedAt: null
       });
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(userWallets);
     } catch (error) {
       sails.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json(error);
     }
   },
   grandToken: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       const authUser = req.token.userInfo;
       let tokenRes = await bKashGrandToken(authUser);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(tokenRes);
     } catch (error) {
-      sails.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json(error);
     }
 
@@ -57,6 +71,7 @@ module.exports = {
     }
 
     try {
+      const time1 = performance.now();
 
       const authUser = getAuthUser(req);
 
@@ -82,10 +97,14 @@ module.exports = {
         });
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(422).json(tokenRes);
 
     } catch (error) {
-      sails.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json(error);
     }
   },
@@ -98,6 +117,7 @@ module.exports = {
       });
     }
     try {
+      const time1 = performance.now();
 
       const authUser = getAuthUser(req);
       logger.orderLog(authUser.id, '######## Cancel Agreement bkash ########');
@@ -128,14 +148,20 @@ module.exports = {
         return res.status(200).json(bkashCustomerWallet);
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(422).json(cancelAgreementRes);
 
     } catch (error) {
-      sails.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json(error);
     }
   },
   agreementCallback: async (req, res) => {
+    const time1 = performance.now();
+
     let customer = await PaymentService.getTheCustomer(req.param('id'));
 
     if(!customer){
@@ -207,6 +233,9 @@ module.exports = {
         row_status: 99
       });
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.writeHead(301, {
         Location: sslWebUrl + '/profile/bkash-accounts?bKashError=' + encodeURIComponent(messageToShow)
       });
@@ -214,7 +243,8 @@ module.exports = {
       res.end();
 
     } catch (error) {
-      sails.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.writeHead(301, {
         Location: sslWebUrl + '/profile/bkash-accounts?bKashError=' + encodeURIComponent(error.message)
       });
@@ -222,6 +252,8 @@ module.exports = {
     }
   },
   paymentCallback: async (req, res) => {
+    const time1 = performance.now();
+
     const orderId = req.query.order_id;
     let redirectUrl = sslWebUrl + '/checkout';
 
@@ -387,13 +419,16 @@ module.exports = {
         })
       });
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.writeHead(301, {
         Location: redirectUrl + '?bKashError=' + encodeURIComponent(messageToShow)
       });
       res.end();
 
     } catch (error) {
-      sails.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
 
       res.writeHead(301, {
         Location: redirectUrl + '?bKashError=' + encodeURIComponent(error.message)
@@ -405,6 +440,8 @@ module.exports = {
   agreementCallbackCheckout: async (req, res) => {
 
     sails.log(req.query);
+
+    const time1 = performance.now();
 
     try {
 
@@ -528,13 +565,17 @@ module.exports = {
         });
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.writeHead(301, {
         Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('There was a problem in creating the bKash Payment Agreement')
       });
       res.end();
 
     } catch (error) {
-      sails.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.writeHead(301, {
         Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('There was a problem in creating the bKash Payment Agreement')
       });

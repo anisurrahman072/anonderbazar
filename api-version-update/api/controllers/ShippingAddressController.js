@@ -4,12 +4,14 @@
  * @description :: Server-side logic for managing shippings
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-
+const {performance} = require('perf_hooks');
 const {isResourceOwner} = require('../../libs/check-permissions');
 module.exports = {
   update: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       const foundAddress = await ShippingAddress.findOne({
         id: req.param('id')
       });
@@ -36,6 +38,8 @@ module.exports = {
   // destroy a row
   destroy: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const foundAddress = await ShippingAddress.findOne({
         id: req.param('id')
       });

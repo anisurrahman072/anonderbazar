@@ -4,11 +4,14 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
+const {performance} = require('perf_hooks');
 
 module.exports = {
   //Method called for creating chat user data
   //Model models/ChatUser.js
   create: async (req, res) => {
+
+    const time1 = performance.now();
 
     async function create(body) {
       try {
@@ -20,6 +23,8 @@ module.exports = {
           return res.status(400).json({ success: false });
         }
       } catch (error) {
+        sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
         return res.status(400).json({ success: false });
       }
     }
@@ -27,12 +32,17 @@ module.exports = {
       req.body.status = 1;
     }
     await create(req.body);
+
+    const time2 = performance.now();
+    sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
   },
   //Method called for getting chat notification data
   //Model models/ChatUser.js
   getNotification: async  (req, res) => {
     let total = 0;
     try {
+      const time1 = performance.now();
 
       let _where = {};
       _where.deletedAt = null;
@@ -58,6 +68,10 @@ module.exports = {
 
         })
       );
+
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'get chat in search',
@@ -65,6 +79,8 @@ module.exports = {
         data: allChats,
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All Chats';
       res.status(400).json({
         success: false,

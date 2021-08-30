@@ -3,6 +3,7 @@
  */
 
 const {pagination} = require('../../libs/pagination');
+const {performance} = require('perf_hooks');
 
 
 module.exports = {
@@ -10,6 +11,8 @@ module.exports = {
   /*method called for getting all the products in which a user has asked a question*/
   getAllQuestionedProducts: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let _pagination = pagination(req.query);
 
       let rawSQL = `
@@ -69,6 +72,8 @@ module.exports = {
   //Model models/ProductQuestionAnswer.js
   destroy: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       await ProductQuestionAnswer.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
 
       return res.json({
@@ -87,6 +92,8 @@ module.exports = {
 
   findOne: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let rawSQL = `
       SELECT
             product_question_answer.*,
@@ -133,6 +140,8 @@ module.exports = {
 
   addAnswer: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       await ProductQuestionAnswer.updateOne({id: req.param('id')})
         .set({answer: req.body.answer, answered_by: req.body.answeredBy});
 

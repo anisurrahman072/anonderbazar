@@ -6,11 +6,15 @@
  */
 
 const {pagination} = require('../../libs/pagination');
+const {performance} = require('perf_hooks');
+
 module.exports = {
   //Method called for getting all variant data
   //Model models/Variant.js
   getAll: async (req, res) => {
     try {
+
+      const time1 = performance.now();
 
       let _pagination = pagination(req.query);
 

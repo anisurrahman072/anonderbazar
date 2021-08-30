@@ -7,12 +7,15 @@
 const {uploadImagesWithConfig} = require('../../libs/helper');
 const {uploadImages} = require('../../libs/helper');
 const {imageUploadConfig} = require('../../libs/helper');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   //Method called for deleting a warehouse variant data
   //Model models/WarehouseVariant.js
   destroy: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const user = await WarehouseVariant.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
       return res.json(user[0]);
     } catch (error) {
@@ -23,6 +26,8 @@ module.exports = {
   //Model models/WarehouseVariant.js
   create: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       if (req.body.hasImage === 'true') {
         const uploadConfig = imageUploadConfig();
         let tempImg = await uploadImagesWithConfig(req.file('image'), {
@@ -52,6 +57,8 @@ module.exports = {
   //Model models/WarehouseVariant.js
   update: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       if (req.body.hasImage === 'true') {
         const uploaded = await uploadImages(req.file('image'));
         if (uploaded.length === 0) {
