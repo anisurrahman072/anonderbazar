@@ -711,9 +711,9 @@ module.exports = {
       const anonderJhorRaw = await sails.sendNativeQuery(rawSQL, []);*/
 
       let anonderJhor = await sails.helpers.cacheRead('getAnonderJhorInfo');
-      // console.log('######### getAnonderJhorInfo from cache ############', anonderJhor);
       if(!anonderJhor){
-        throw new Error('getAnonderJhorInfo not found!');
+        sails.log.debug('######### getAnonderJhorInfo not found in cache ############');
+        anonderJhor = await OfferService.getAnonderJhorInfo();
       }
 
       const time2 = performance.now();
