@@ -15,7 +15,7 @@ module.exports = {
       const craftmanSchedule = await CraftmanSchedule.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(200, craftmanSchedule);
     } catch (error) {

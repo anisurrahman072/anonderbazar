@@ -32,7 +32,7 @@ module.exports = {
         deletedAt: null
       });
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json(userWallets);
     } catch (error) {
@@ -51,7 +51,7 @@ module.exports = {
       let tokenRes = await bKashGrandToken(authUser);
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json(tokenRes);
     } catch (error) {
@@ -98,7 +98,7 @@ module.exports = {
       }
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(422).json(tokenRes);
 
@@ -149,7 +149,7 @@ module.exports = {
       }
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(422).json(cancelAgreementRes);
 
@@ -234,7 +234,7 @@ module.exports = {
       });
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       res.writeHead(301, {
         Location: sslWebUrl + '/profile/bkash-accounts?bKashError=' + encodeURIComponent(messageToShow)
@@ -420,7 +420,7 @@ module.exports = {
       });
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       res.writeHead(301, {
         Location: redirectUrl + '?bKashError=' + encodeURIComponent(messageToShow)
@@ -566,7 +566,7 @@ module.exports = {
       }
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       res.writeHead(301, {
         Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('There was a problem in creating the bKash Payment Agreement')

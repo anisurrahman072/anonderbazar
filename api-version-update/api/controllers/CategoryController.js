@@ -24,7 +24,7 @@ module.exports = {
       });
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(201).json({
         message: true
@@ -124,7 +124,7 @@ module.exports = {
       const returnCategory = await Category.create(body).fetch();
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json(returnCategory);
     } catch (err) {
@@ -145,7 +145,7 @@ module.exports = {
       const category = await Category.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(category);
     } catch (error) {
@@ -163,7 +163,7 @@ module.exports = {
 
       const category = await Category.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(category);
     } catch (error) {
@@ -184,7 +184,7 @@ module.exports = {
       });
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       if (categories) {
         res.status(200).json(categories);
@@ -208,7 +208,7 @@ module.exports = {
       const categories = await Category.find()
         .where({type_id: 2, deletedAt: null});
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(200, categories);
     } catch (error) {
@@ -226,7 +226,7 @@ module.exports = {
 
       const category = await Category.findOne({id: req.param('id'), type_id: 1});
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(200, category);
     } catch (error) {
@@ -243,7 +243,7 @@ module.exports = {
 
       const category = await Category.findOne({id: req.param('id'), type_id: 2});
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(200, category);
     } catch (error) {
@@ -270,7 +270,7 @@ module.exports = {
       body.type_id = 2;
       const CategoryUpload = await Category.create(body).fetch();
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(200, CategoryUpload);
 
@@ -299,7 +299,7 @@ module.exports = {
       }
       const created = await Category.create(body).fetch();
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(200, created);
     } catch (error) {
@@ -381,7 +381,7 @@ module.exports = {
 
       const updateCategory = await Category.updateOne({id: req.param('id')}).set(body);
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json(updateCategory);
     } catch (error) {
@@ -412,7 +412,7 @@ module.exports = {
       }).set(body);
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json(udpated);
     } catch (error) {
@@ -442,7 +442,7 @@ module.exports = {
       }).set(body);
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json(udpated);
     } catch (error) {
@@ -459,13 +459,13 @@ module.exports = {
 
       let categories = await sails.helpers.cacheRead('allCategories');
       if(!categories){
-        categories = await CacheService.allCategories();
+        categories = await CacheServiceuu.allCategories();
         console.log('######## Server cache writing for allCategories ###########');
         await sails.helpers.cacheWrite('allCategories', 86400, JSON.stringify(categories));
       }
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(categories);
     } catch (error) {
@@ -489,7 +489,7 @@ module.exports = {
       }));
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(allCategories);
     } catch (error) {
@@ -513,7 +513,7 @@ module.exports = {
       }
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(allCategories);
     } catch (error) {
@@ -543,7 +543,7 @@ module.exports = {
       });
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json({
         success: true,

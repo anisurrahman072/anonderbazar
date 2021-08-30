@@ -16,7 +16,7 @@ module.exports = {
       let eventPrice = await EventPrice.findOne(req.params.id);
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       res.status(200).json(
         eventPrice
@@ -41,7 +41,7 @@ module.exports = {
 
       const eventPrice = await EventPrice.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(eventPrice);
     } catch (error) {

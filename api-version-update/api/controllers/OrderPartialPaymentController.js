@@ -61,7 +61,7 @@ module.exports = {
       }
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
     } catch (error) {
 
@@ -113,7 +113,7 @@ module.exports = {
       );
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json(response);
     } catch (finalError) {
@@ -172,7 +172,7 @@ module.exports = {
       const response = await paymentGatewayService.makePartialPayment(authUser, order, req, globalConfigs);
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json(response);
     } catch (finalError) {

@@ -17,7 +17,7 @@ module.exports = {
 
       const event = await EventManagement.findOne(req.params.id);
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       res.status(200).json(event);
     } catch (error) {
@@ -61,7 +61,7 @@ module.exports = {
       let data = await EventManagement.create(req.body);
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       if (data) {
         return res.json(200, data);
@@ -100,7 +100,7 @@ module.exports = {
       const eventManagement = await EventManagement.updateOne({id: req.param('id')}).set(req.body);
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(200, {eventManagement: eventManagement, token: jwToken.issue({id: eventManagement.id})});
 
@@ -122,7 +122,7 @@ module.exports = {
 
       const eventManagement = await EventManagement.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(eventManagement);
     } catch (error) {

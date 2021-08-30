@@ -15,7 +15,7 @@ module.exports = {
     const time1 = performance.now();
 
     const time2 = performance.now();
-    sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+    sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
     return res.json({
       currentTime: moment().format('YYYY-MM-DD HH:mm:ss')
@@ -54,7 +54,7 @@ module.exports = {
       }).fetch();
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(200, data);
 
@@ -122,7 +122,7 @@ module.exports = {
         }
 
         const time2 = performance.now();
-        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+        sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
         return res.json(200, data);
       } else {

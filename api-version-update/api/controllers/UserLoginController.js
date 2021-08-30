@@ -14,7 +14,7 @@ module.exports = {
       const user = await UserLogin.update({id: req.param('id')}, {deletedAt: new Date()}).fetch();
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(user[0]);
     } catch (error) {

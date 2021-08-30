@@ -34,7 +34,7 @@ module.exports = {
           .populate('warehouse_id');
 
         const time2 = performance.now();
-        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+        sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
         return res.status(200).json({
           status: true,
@@ -83,7 +83,7 @@ module.exports = {
 
         });
         const time2 = performance.now();
-        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+        sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
         return res.status(200).json({
           status: true,
@@ -113,7 +113,7 @@ module.exports = {
 
       const productDesign = ProductDesign.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(200, {productDesign: productDesign});
     } catch (error) {

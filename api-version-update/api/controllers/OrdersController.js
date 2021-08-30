@@ -77,7 +77,7 @@ exports.index = async (req, res) => {
       .populate('coupon_banner_images', {deletedAt: null});
 
     const time2 = performance.now();
-    sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+    sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
     res.status(200).json({
       success: true,
@@ -168,7 +168,7 @@ exports.create = async (req, res) => {
       .populate('coupon_banner_images', {deletedAt: null});
 
     const time2 = performance.now();
-    sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+    sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
     res.status(200).json({
       success: true,

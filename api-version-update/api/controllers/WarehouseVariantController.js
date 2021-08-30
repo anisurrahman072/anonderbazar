@@ -19,7 +19,7 @@ module.exports = {
       const user = await WarehouseVariant.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(user[0]);
     } catch (error) {
@@ -48,14 +48,14 @@ module.exports = {
 
         let warehouseVariant = await WarehouseVariant.create(req.body).fetch();
         const time2 = performance.now();
-        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+        sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
         return res.json(200, warehouseVariant);
       } else {
         let warehouseVariant = await WarehouseVariant.create(req.body).fetch();
 
         const time2 = performance.now();
-        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+        sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
         return res.json(200, warehouseVariant);
       }
@@ -84,7 +84,7 @@ module.exports = {
       const warehouseVariant = await WarehouseVariant.updateOne({id: req.param('id')}).set(req.body);
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(200, warehouseVariant);
     } catch (error) {

@@ -26,7 +26,7 @@ module.exports = {
 
       let courierList = await CourierList.create(req.body).fetch();
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json({courierList: courierList});
 
@@ -53,7 +53,7 @@ module.exports = {
       let courierListOrder = await CourierListOrder.create(req.body).fetch();
 
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json({courierListOrder: courierListOrder});
 
@@ -74,7 +74,7 @@ module.exports = {
       if (req.body.status === '2' || req.body.status === '11' || req.body.status === '12') {
         let list = await CourierList.update({suborder_id: req.param('id')}, req.body).fetch();
         const time2 = performance.now();
-        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+        sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
         return res.json(200, list);
       }
@@ -93,7 +93,7 @@ module.exports = {
 
       const courierlist = await CourierList.update({id: req.param('id')}, {status: req.body.status}).fetch();
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(200, courierlist);
     } catch (error) {
@@ -110,7 +110,7 @@ module.exports = {
 
       const courierlist = await CourierListOrder.update({id: req.param('id')}, {status: req.body.status}).fetch();
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(200, courierlist);
     } catch (error) {
@@ -127,7 +127,7 @@ module.exports = {
 
       const courierlist = await CourierList.updateOne({id: req.param('id')}).set(req.body);
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(200, courierlist);
     } catch (error) {
@@ -144,7 +144,7 @@ module.exports = {
 
       const user = await CourierList.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(200, user[0]);
     } catch (error) {
@@ -161,7 +161,7 @@ module.exports = {
 
       const user = await CourierListOrder.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
       const time2 = performance.now();
-      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(200, user[0]);
     } catch (error) {
