@@ -45,12 +45,17 @@ module.exports = {
       if (!user) {
         return res.notFound();
       }
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(user);
 
     } catch (error) {
       if (error.name === 'UsageError') {
+        sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
         return res.badRequest(error);
       }
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       return res.serverError(error);
     }
 
@@ -81,12 +86,17 @@ module.exports = {
         }
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(user);
 
     } catch (err) {
       if (err && err.naame === 'UsageError') {
+        sails.log.error(`Request Uri: ${req.path} ########## ${err}`);
         return res.badRequest(err);
       }
+      sails.log.error(`Request Uri: ${req.path} ########## ${err}`);
       return res.serverError(err);
     }
   },
@@ -119,8 +129,12 @@ module.exports = {
       }
       await User.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(202).json(user);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       return res.status(401).json({
         success: false,
         message: 'Problem in deleting the user',
@@ -173,10 +187,14 @@ module.exports = {
 
         const user = await User.create(req.body).fetch();
 
+        const time2 = performance.now();
+        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.json(200, {user: user, token: jwToken.issue({id: user.id})});
 
       } catch (error) {
         console.log(error);
+        sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
         return res.status(400).json({
           success: false,
           message: 'Failed to create user',
@@ -220,13 +238,17 @@ module.exports = {
         try {
           EmailService.sendPasswordResetMailUpdated(user, req.body.password);
         } catch (err) {
+          sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
           console.log(err);
         }
       }
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(200, {user: user, token: jwToken.issue({id: user.id})});
 
     } catch (ee) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${ee}`);
       console.log(ee);
       return res.status(400).json({
         success: false,
@@ -325,12 +347,16 @@ module.exports = {
         }
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         user: user,
         token: jwToken.issue({id: user.id})
       });
 
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       console.log(error);
       res.status(400).json({
         success: false,
@@ -363,16 +389,23 @@ module.exports = {
       const user = await User.find(where);
 
       if (user && user.length > 0) {
+        const time2 = performance.now();
+        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.status(200).json({
           success: false,
           isunique: false,
         });
       }
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         isunique: true,
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       console.log(error);
       return res.status(400).json({
         success: false,
@@ -404,16 +437,23 @@ module.exports = {
       const user = await User.find(where);
 
       if (user && user.length > 0) {
+        const time2 = performance.now();
+        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.status(200).json({
           success: false,
           isunique: false
         });
       }
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         isunique: true
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       console.log(error);
       return res.status(400).json({
         success: false,
@@ -445,16 +485,23 @@ module.exports = {
       const user = await User.find(where);
 
       if (user && user.length > 0) {
+        const time2 = performance.now();
+        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.status(200).json({
           success: false,
           isunique: false,
         });
       }
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         isunique: true,
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       console.log(error);
       return res.status(400).json({
         success: false,
@@ -473,6 +520,9 @@ module.exports = {
         _pagination
       } = await getAllUsers(req, shop_group_id);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         total: totalCustomers,
@@ -484,6 +534,7 @@ module.exports = {
       });
 
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       console.log(error);
       let message = 'Error in get all users with pagination';
       return res.status(400).json({
@@ -506,6 +557,9 @@ module.exports = {
         _pagination
       } = await getAllUsers(req, customer_group_id);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         total: totalCustomers,
@@ -517,6 +571,7 @@ module.exports = {
       });
 
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       console.log(error);
       let message = 'Error in get all users with pagination';
       return res.status(400).json({
@@ -603,6 +658,9 @@ module.exports = {
         .populate('division_id')
         .populate('upazila_id');
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalUser,
@@ -613,6 +671,7 @@ module.exports = {
         data: Users
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       let message = 'Error in get all users with pagination';
       res.status(400).json({
         success: false,
@@ -695,6 +754,9 @@ module.exports = {
           }
         }
       }
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         totalOrder: totalOrder,
@@ -708,6 +770,7 @@ module.exports = {
         data: aUser
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       let message = 'Error in Get All UserDashboard with pagination';
 
       res.status(400).json({
@@ -814,6 +877,9 @@ module.exports = {
         }
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         totalOrder: totalOrder,
@@ -827,6 +893,7 @@ module.exports = {
         data: aUser
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       let message = 'Error in Get All User Dashboard with pagination';
 
       res.status(400).json({
