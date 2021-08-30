@@ -46,8 +46,11 @@ module.exports = {
         .populate('variant_id')
         .populate('brand_id');
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       res.status(200).json({
+
         success: true,
         total: totalWarehouseVariant,
         limit: _pagination.limit,
@@ -59,6 +62,7 @@ module.exports = {
     } catch (error) {
       let message = 'Error in Get All WarehouseVariant  with pagination';
       console.log('error', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       res.status(400).json({
         success: false,
         message,

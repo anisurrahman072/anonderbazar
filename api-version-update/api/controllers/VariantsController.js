@@ -27,12 +27,12 @@ module.exports = {
 
       let _sort = [];
       if (req.query.sortKey && req.query.sortValue) {
-        _sort.push({ [req.query.sortKey] : req.query.sortValue});
+        _sort.push({[req.query.sortKey]: req.query.sortValue});
       } else {
-        _sort.push({ createdAt : 'DESC'});
+        _sort.push({createdAt: 'DESC'});
       }
 
-      let totalVariant = await  Variant.count().where(_where);
+      let totalVariant = await Variant.count().where(_where);
       _pagination.limit = _pagination.limit ? _pagination.limit : totalVariant;
       let variants = await Variant.find(
         {
@@ -42,6 +42,8 @@ module.exports = {
           sort: _sort,
         });
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       res.status(200).json({
         success: true,
@@ -52,10 +54,9 @@ module.exports = {
         message: 'Get All variant with pagination',
         data: variants
       });
-    } catch
-    (error) {
+    } catch (error) {
       let message = 'Error in Get All Variant with pagination';
-
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       res.status(400).json({
         success: false,
         message

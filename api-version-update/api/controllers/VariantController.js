@@ -33,9 +33,20 @@ module.exports = {
       const time1 = performance.now();
 
       const variant = await Variant.create(req.body).fetch();
+
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.json(200, variant);
-    }catch (error){
+    } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       return res.json(error.status, {message: '', error, success: false});
     }
   }
 };
+
+
+sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
+const time2 = performance.now();
+sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
