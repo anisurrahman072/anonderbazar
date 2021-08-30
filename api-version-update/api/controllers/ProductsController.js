@@ -179,6 +179,9 @@ module.exports = {
         products = rawResult.rows;
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalProducts,
@@ -214,6 +217,9 @@ module.exports = {
         }
       });
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'read single product',
@@ -221,6 +227,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'error in read product';
       return res.status(400).json({
         success: false,
@@ -275,12 +283,17 @@ module.exports = {
         }
       });
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'get from product designCombination',
         data
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'error from designCombination',
@@ -405,6 +418,9 @@ module.exports = {
         .populate('brand_id')
         .populate('warehouse_id');
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'get product in search',
@@ -416,6 +432,8 @@ module.exports = {
       });
     } catch (error) {
       console.log('error', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'error in search product',
@@ -470,6 +488,9 @@ module.exports = {
       });
 
       const total = productTotal;
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'get product in search ',
@@ -478,6 +499,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'error in search product',
@@ -593,8 +616,13 @@ module.exports = {
 
       wb.write('Excel-' + Date.now() + '.xlsx', res);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
     } catch (error) {
       console.error(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'error in generating excel',
@@ -746,6 +774,9 @@ module.exports = {
         }
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Number of Products successfully created: ' + count,
@@ -753,6 +784,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'error in bulk product upload',
@@ -1172,8 +1205,13 @@ module.exports = {
 
       wb.write('Excel-' + Date.now() + '.xlsx', res);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All products with excel';
       res.status(400).json({
         success: false,
@@ -1439,12 +1477,17 @@ module.exports = {
         count++;
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'Number of Products successfully updated: ' + count,
       });
     } catch (error) {
       console.log('Error in bulk update: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         error
@@ -1482,12 +1525,17 @@ module.exports = {
       const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
       console.log('products', rawResult.rows);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Successfully fetched all products',
         products: rawResult.rows
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error occurred while fetching all products',
@@ -1524,12 +1572,17 @@ module.exports = {
       const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
       console.log('products', rawResult.rows);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Successfully fetched all products',
         products: rawResult.rows
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error occurred while fetching all products',

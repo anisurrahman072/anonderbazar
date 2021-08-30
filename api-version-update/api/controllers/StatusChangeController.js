@@ -14,6 +14,9 @@ module.exports = {
   currentTime: (req, res) => {
     const time1 = performance.now();
 
+    const time2 = performance.now();
+    sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
     return res.json({
       currentTime: moment().format('YYYY-MM-DD HH:mm:ss')
     });
@@ -50,10 +53,14 @@ module.exports = {
         status: submittedStatus
       }).fetch();
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(200, data);
 
     } catch (error) {
 
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       res.status(400).json({
         success: false,
         message: 'Problem in updating status',
@@ -114,11 +121,16 @@ module.exports = {
           EmailService.orderStatusdMailVendor(order, warehouse, ORDER_STATUSES_INDEX[payload.status]);
         }
 
+        const time2 = performance.now();
+        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.json(200, data);
       } else {
         return res.status(400).json({success: false});
       }
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({success: false, error});
     }
 

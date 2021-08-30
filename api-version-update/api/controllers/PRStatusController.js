@@ -50,6 +50,9 @@ module.exports = {
         });
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(422).json({
         success: false,
         'message': 'Operation Failed (Validation Error)'
@@ -57,6 +60,8 @@ module.exports = {
 
     } catch (error) {
       console.log('error', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Mass update pr status';
       return res.status(400).json({
         success: false,
@@ -73,12 +78,17 @@ module.exports = {
 
       req.body.date = moment(req.body.date).format('YYYY-MM-DD HH:mm:ss');
       let data = await PRStatus.create(req.body).fetch();
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       if (data) {
         return res.json(200, data);
       } else {
         return res.status(422).json({success: false});
       }
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({success: false, error});
     }
 
@@ -100,6 +110,9 @@ module.exports = {
 
       let totalPrStatus = await PRStatus.count().where(_where);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalPrStatus,
@@ -112,6 +125,8 @@ module.exports = {
 
     }
     catch (error){
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All PRstatus with pagination.';
 
       res.status(400).json({

@@ -16,8 +16,13 @@ module.exports = {
       const time1 = performance.now();
 
       const productVariant = await ProductVariant.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(productVariant);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All category with pagination';
       return res.status(400).json({
         success: false,
@@ -45,12 +50,21 @@ module.exports = {
           warehouses_variant_id: req.body.warehouses_variant_id
         };
         const productVariant = await ProductVariant.create(body).fetch();
+
+        const time2 = performance.now();
+        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.json(200, productVariant);
       } else {
         const productVariant = await ProductVariant.create(req.body).fetch();
+        const time2 = performance.now();
+        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.json(200, productVariant);
       }
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = '';
       return res.status(400).json({
         success: false,
@@ -94,10 +108,15 @@ module.exports = {
         if (error) {
           return res.negotiate(error);
         }
+        const time2 = performance.now();
+        sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.ok(data);
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = '';
       return res.status(400).json({
         success: false,

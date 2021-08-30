@@ -24,9 +24,14 @@ module.exports = {
         id: req.param('id')
       }).set(req.body);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(201, address);
 
     } catch (error) {
+
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
 
       return res.status(400).json({
         success: false,
@@ -49,8 +54,13 @@ module.exports = {
       }
 
       const shippingAddress = await ShippingAddress.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(shippingAddress);
     } catch (error){
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Problems!',
