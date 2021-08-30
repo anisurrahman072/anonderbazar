@@ -7,6 +7,7 @@
 const {asyncForEach} = require('../../libs/helper');
 const {uploadImages} = require('../../libs/helper');
 const _ = require('lodash');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   removeImage: async (req, res) => {
@@ -360,9 +361,16 @@ module.exports = {
 
   allCategories: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let categories = await Category.find({deletedAt: null, parent_id: 0, type_id: 2, show_in_nav: 1}).populate('offer_id');
+
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(categories);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       return res.status(error.status).json({message: '', error, success: false});
     }
   },
