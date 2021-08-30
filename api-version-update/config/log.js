@@ -15,7 +15,7 @@ let { combine, timestamp, label, prettyPrint } = format;
 let commonSettings = {
   colorize: false,
   format: combine(
-    label({ label: `Anonderbazar Error occurred!` }),
+    label({ label: `Anonderbazar log!` }),
     timestamp({
       format: 'YYYY-MM-DD HH:mm:ss'
     }),
