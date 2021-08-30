@@ -313,7 +313,7 @@ module.exports = {
       }
 
       let valid;
-      if (req.body.oldPassword !== '' && req.body.newPassword !== '') {
+      if (req.body.oldPassword && req.body.newPassword) {
         valid = await comparePasswords(req.body.oldPassword, user.password);
 
         if (!valid) {

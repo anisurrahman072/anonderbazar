@@ -168,6 +168,8 @@ module.exports = {
        p_order.total_price as total_price,
        p_order.user_id,
        p_order.created_at as orderCreatedAt,
+       p_order.order_type,
+       p_order.paid_amount,
        suborder.status as sub_order_status,
 
        payment.payment_type as paymentType,

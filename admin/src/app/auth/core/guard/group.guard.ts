@@ -18,7 +18,7 @@ export class GroupGuard implements CanActivate {
     canActivate() {
         const token = localStorage.getItem('token');
         const jwtPayload = this.jwtHelper.decodeToken(token);
-        console.log("access list: ", jwtPayload.userInfo.group_id.accessList);
+        console.log('jwtPayload.group_id', jwtPayload.group_id);
         console.log('token: jwtPayload', jwtPayload);
 
         if (jwtPayload.group_id == 'admin') {
@@ -41,10 +41,12 @@ export class GroupGuard implements CanActivate {
         } else if (jwtPayload.group_id == 'sales') {
             return true;
 
-        } else if (jwtPayload.group_id && jwtPayload.group_id !== 'customer') {
+        } else if (jwtPayload.group_id && jwtPayload.group_id !== 'customer' && jwtPayload.userInfo.user_type === 'admin') {
             return true;
 
         } else {
+            console.log('jwtPayload.group_id: inside else', jwtPayload.group_id);
+            console.log('token: jwtPayload: inside else', jwtPayload);
             this.router.navigate(['/auth/login']);
             return false;
         }

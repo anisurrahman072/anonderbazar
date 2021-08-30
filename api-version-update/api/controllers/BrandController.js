@@ -13,9 +13,13 @@ module.exports = {
     try {
       const time1 = performance.now();
 
-      let allBrands = await Brand.find({
+      let defaultQuery = {
         deletedAt: null
-      }).sort([
+      };
+      if (req.query.skip && req.query.take) {
+        defaultQuery = {where: defaultQuery, skip: req.query.skip, limit: req.query.take };
+      }
+      let allBrands = await Brand.find(defaultQuery).sort([
         {frontend_position: 'ASC'}
       ]);
 

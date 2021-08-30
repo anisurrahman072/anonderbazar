@@ -19,6 +19,7 @@ import {Title} from "@angular/platform-browser";
 import {QueryMessageModalComponent} from "../../shared/components/query-message-modal/query-message-modal.component";
 import {FileHolder, UploadMetadata} from "angular2-image-upload";
 import * as he from 'he';
+import {DesignimageService} from "../../../services/designimage.service";
 
 @Component({
     selector: 'app-checkout-page',
@@ -103,14 +104,10 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     isPartiallyPayable = true;
     isShowOfflineForm: boolean = false;
-    isShowCashInAdvanceForm: boolean = false;
-    isShowBankTransferForm: boolean = false;
-    isBankDeposit: boolean = false;
-    isMobileTransfer: boolean = false;
 
-    ImageFile: File = null;
-    BankDepositImageFile: File = null;
-    mobileTransferImageFile: File = null;
+    ImageFile = [];
+    storeImageFileName: File[] = [];
+    showImageMissingValidation: boolean = false;
 
     offerData: any;
 
@@ -130,7 +127,6 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     wrongCartItemsModalRef: BsModalRef;
 
-
     constructor(
         private cdr: ChangeDetectorRef,
         private route: ActivatedRoute,
@@ -147,7 +143,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         private modalService: BsModalService,
         private bKashService: BkashService,
         public loaderService: LoaderService,
-        private title: Title) {
+        private title: Title,
+        private designImagesService: DesignimageService) {
 
     }
 
@@ -569,26 +566,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             return false;
         }
 
-        if (!this.isShowCashInAdvanceForm && !this.isShowBankTransferForm && !this.isBankDeposit && !this.isMobileTransfer) {
-            this.toastr.error("Please select a Offline Payment method to proceed", "Not selected", {
-                positionClass: 'toast-bottom-right'
-            });
-            this.loaderService.hideLoader();
-            return false;
-        }
-
-        if ((this.isShowCashInAdvanceForm && !this.ImageFile) ||
-            (this.isBankDeposit && !this.BankDepositImageFile) ||
-            (this.isMobileTransfer && !this.mobileTransferImageFile)) {
+        if (this.ImageFile.length <= 0) {
+            this.showImageMissingValidation = true;
             this.toastr.error("Please upload the image first!", "Not provided the money receipt!", {
-                positionClass: 'toast-bottom-right'
-            });
-            this.loaderService.hideLoader();
-            return false;
-        }
-
-        if (this.isShowBankTransferForm && (!value.transactionIdForBank || !value.bankName || !value.branchName || !value.accountNumberForBank)) {
-            this.toastr.error("Please fill up Bank transfer form correctly!", "Not filled up all fields!!", {
                 positionClass: 'toast-bottom-right'
             });
             this.loaderService.hideLoader();
@@ -638,45 +618,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         formData.append('is_copy', `${this.isCopy}`);
 
         if (value.paymentType == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE) {
-            if (value.offlinePaymentMethods == 'bankTransfer') {
-                if (!value.transactionIdForBank || !value.bankName || !value.branchName || !value.accountNumberForBank) {
-                    this.toastr.error('Error occurred', "Insert all the fields of bank transfer method", {
-                        positionClass: 'toast-bottom-right'
-                    });
-                    return false;
-                }
-                formData.append('offlinePaymentMethod', 'bankTransfer');
-                let bankTransferInfo = {
-                    transactionId: value.transactionIdForBank,
-                    bankName: value.bankName,
-                    branchName: value.branchName,
-                    accountNumberForBank: value.accountNumberForBank
-                }
-                formData.append('bankTransfer', JSON.stringify(bankTransferInfo));
-            } else if (value.offlinePaymentMethods === 'cashInAdvance') {
-                formData.append('offlinePaymentMethod', 'cashInAdvance');
-                if (this.ImageFile) {
-                    formData.append('hasImage', 'true');
-                    formData.append('image', this.ImageFile, this.ImageFile.name);
-                } else {
-                    formData.append('hasImage', 'false');
-                }
-            } else if (value.offlinePaymentMethods === 'bankDeposit') {
-                formData.append('offlinePaymentMethod', 'bankDeposit');
-                if (this.BankDepositImageFile) {
-                    formData.append('hasImage', 'true');
-                    formData.append('image', this.BankDepositImageFile, this.BankDepositImageFile.name);
-                } else {
-                    formData.append('hasImage', 'false');
-                }
-            } else if (value.offlinePaymentMethods === 'mobileTransfer') {
-                formData.append('offlinePaymentMethod', 'mobileTransfer');
-                if (this.mobileTransferImageFile) {
-                    formData.append('hasImage', 'true');
-                    formData.append('image', this.mobileTransferImageFile, this.mobileTransferImageFile.name);
-                } else {
-                    formData.append('hasImage', 'false');
-                }
+            if (this.ImageFile.length > 0) {
+                this.ImageFile = this.ImageFile.map(image => image.split(this.IMAGE_ENDPOINT)[1]);
+                formData.append('image', JSON.stringify(this.ImageFile));
             }
         } else {
             this.toastr.error('Error occurred', "Insert correct payment method", {
@@ -1238,58 +1182,47 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     onRemoved(file: FileHolder) {
-        this.ImageFile = null;
-    }
+        if(this.ImageFile.length > 0){
+            let imagePath = this.ImageFile[this.storeImageFileName.findIndex(e => e.name === file.file.name)];
 
-    onRemovedBankDepositSlip(file: FileHolder) {
-        this.BankDepositImageFile = null;
-    }
 
-    onRemovedMobileTransferSS(file: FileHolder) {
-        this.mobileTransferImageFile = null;
+            let formData = new FormData();
+            formData.append('oldImagePath', `${imagePath.split(this.IMAGE_ENDPOINT)[1]}`);
+
+            this.designImagesService.deleteImage(formData)
+                .subscribe(data => {
+                    this.ImageFile.splice(this.storeImageFileName.findIndex(e => e.name === file.file.name), 1);
+                    this.storeImageFileName.splice(this.storeImageFileName.findIndex(e => e.name === file.file.name), 1);
+                    if(this.ImageFile.length <= 0){
+                        this.showImageMissingValidation = true;
+                    }
+                    this.toastr.success("Successfully deleted image", "Success!", {});
+
+                }, error => {
+                    console.log("Error occurred: ", error);
+                    this.toastr.error("Error occurred while deleting image", "Error!", {});
+                })
+        }
     }
 
     onBeforeUpload = (metadata: UploadMetadata) => {
-        let fileExtension = metadata.file.type;
-        if (fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")) {
-            this.ImageFile = metadata.file;
-            return metadata;
-        } else {
-            this.ImageFile = null;
-            return false;
-        }
-    };
+        let formData = new FormData();
+        formData.append('image', metadata.file, metadata.file.name);
 
-    onBeforeUploadBankaDepositSlip = (metadata: UploadMetadata) => {
-        let fileExtension = metadata.file.type;
-        if (fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")) {
-            this.BankDepositImageFile = metadata.file;
-            return metadata;
-        } else {
-            this.BankDepositImageFile = null;
-            return false;
-        }
-    };
-
-    onBeforeUploadMobileTransferSS = (metadata: UploadMetadata) => {
-        let fileExtension = metadata.file.type;
-        if (fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")) {
-            this.mobileTransferImageFile = metadata.file;
-            return metadata;
-        } else {
-            this.mobileTransferImageFile = null;
-            return false;
-        }
+        this.designImagesService.insertImage(formData)
+            .subscribe(data => {
+                this.ImageFile.push(this.IMAGE_ENDPOINT + data.path);
+                this.storeImageFileName.push(metadata.file);
+                this.showImageMissingValidation = false;
+                this.toastr.success("Successfully uploaded image", "Success!", {});
+                }, error => {
+                console.log("Error occurred: ", error);
+                this.toastr.error("Unstable Internet connection while uploading image", "Error!", {});
+            })
+        return metadata;
     };
 
     showOfflineForm(flag) {
         this.isShowOfflineForm = flag;
-    }
-
-    showOfflinePaymentMethods(isCashInAdvance, isBank, isbanlkDeposit, isMobileTransfer) {
-        this.isShowCashInAdvanceForm = isCashInAdvance;
-        this.isShowBankTransferForm = isBank;
-        this.isBankDeposit = isbanlkDeposit;
-        this.isMobileTransfer = isMobileTransfer
     }
 }

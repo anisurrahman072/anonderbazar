@@ -805,9 +805,9 @@ module.exports = {
       });
     }
     const authUser = req.token.userInfo;
-    const isAdmin = authUser.group_id.name === 'admin';
-    const isVendor = authUser.group_id.name === 'owner';
-    if (!(isAdmin || isVendor)) {
+    /*const isAdmin = authUser.group_id.name === 'admin';
+    const isVendor = authUser.group_id.name === 'owner';*/
+    if (!(authUser.user_type === 'admin' || authUser.user_type === 'owner')) {
       return res.status(401).json({
         success: false,
         message: 'You are not allowed to this operation'
@@ -840,7 +840,7 @@ module.exports = {
       const brandSheet = wb.addWorksheet('Brand', options);
       const variantSheet = wb.addWorksheet('Variant', options);
       let wareHouseSheet;
-      if (isAdmin) {
+      if (authUser.user_type === 'admin') {
         wareHouseSheet = wb.addWorksheet('Warehouse', options);
       }
 
@@ -880,7 +880,7 @@ module.exports = {
 
       /* Fetch Warehouse List */
       let wareHouseList;
-      if (isAdmin) {
+      if (authUser.user_type === 'admin') {
         wareHouseList = await Warehouse.find({
           where: {deletedAt: null},
           sort: 'name ASC'
@@ -903,7 +903,7 @@ module.exports = {
         }
       });
 
-      const columnNamesObject = columnListForBulkUpdate(isAdmin);
+      const columnNamesObject = columnListForBulkUpdate(authUser.user_type === 'admin');
       if (authUser.group_id.name === 'owner') {
         delete columnNamesObject['Frontend Position'];
         delete columnNamesObject['Offline Payment'];
@@ -1014,7 +1014,7 @@ module.exports = {
         _where += ` AND products.subcategory_id = ${req.query.subcategory_id} `;
       }
 
-      if (isVendor) {
+      if (authUser.user_type === 'owner') {
         if (authUser.warehouse_id && authUser.warehouse_id.id) {
           _where += ` AND products.warehouse_id = ${authUser.warehouse_id.id} `;
         }
@@ -1028,10 +1028,16 @@ module.exports = {
       const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
 
       const products = rawResult.rows;
+      if(products && !products.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'No products found',
+        });
+      }
 
       /** Find product images */
       let productIds = _.map(products, 'id');
-      console.log('productIds: ', productIds);
+      /*console.log('productIds: ', productIds);*/
 
       const productImagesNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
       let rawImageSelect = `
@@ -1048,7 +1054,7 @@ module.exports = {
       let productsWithImages = productsWithImageResult.rows;
 
       let idWiseProductsWithImages = _.groupBy(productsWithImages, 'id');
-      console.log('idWiseProductsWithImages:  ', idWiseProductsWithImages);
+      /*console.log('idWiseProductsWithImages:  ', idWiseProductsWithImages);*/
       /** Find product images END */
 
       /* let products = await Product.find(
@@ -1079,7 +1085,7 @@ module.exports = {
         Category = Category + '|' + escapeExcel(label);
         ws.cell(row, column++).string(Category).style(myStyle);
 
-        if (isAdmin) {
+        if (authUser.user_type === 'admin') {
           ws.cell(row, column++).string(item.warehouse_id + '|' + escapeExcel(item.warehouse_name));
         }
 

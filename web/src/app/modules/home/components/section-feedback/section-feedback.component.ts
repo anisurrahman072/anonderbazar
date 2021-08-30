@@ -19,7 +19,9 @@ export class FeedbackComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.productService.getTopSellProducts().subscribe(arg => {
+        this.productService.getTopSellProducts('homepage').subscribe(arg => {
+            console.log('hompage top sel: ', arg.data);
+            /*this is in the homepage*/
             this.topSellProducts = arg.data.slice(0, 4);
 
             /** finding out the products exists in the offer store*/

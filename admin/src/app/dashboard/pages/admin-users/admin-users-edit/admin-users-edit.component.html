@@ -34,7 +34,7 @@
             <label> UserName <span style="color: red">*</span> </label>
           </div>
           <div nz-col [nzSpan]="16">
-            <input nz-input formControlName="username" placeholder="Enter UserName" [nzSize]="'large'">
+            <input nz-input formControlName="username" placeholder="Enter UserName" [nzSize]="'large'" [attr.disabled]="isDisabled">
             <div *ngIf="getFormControl('username').dirty&&getFormControl('username').hasError('required')">
               <span style="color: red">Input your username</span>
             </div>

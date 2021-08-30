@@ -1,7 +1,7 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {OrderService} from "../../../../services/order.service";
 import {NzNotificationService} from "ng-zorro-antd";
-import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
+import {GLOBAL_CONFIGS, ORDER_TYPE} from "../../../../../environments/global_config";
 import * as ___ from 'lodash';
 import {AuthService} from "../../../../services/auth.service";
 import * as _moment from "moment";
@@ -228,7 +228,7 @@ export class CanceledOrderComponent implements OnInit {
                         'Grand Total': suborderItem.total_price,
                         'Payment Method': suborderItem.paymentType,
                         'Transaction ID': suborderItem.transactionKey,
-                        'Payment Amount': suborderItem.paymentAmount,
+                        'Payment Amount': suborderItem.order_type === ORDER_TYPE.REGULAR_ORDER_TYPE ? suborderItem.paid_amount : suborderItem.paymentAmount,
                         'Transaction Time': _moment(suborderItem.transactionTime).format('DD-MM-YYYY h:m a'),
                         'Remaining Amount': suborderItem.dueAmount,
                         'Vendor Name': (suborderItem.vendor_name) ? suborderItem.vendor_name.split(',').join('-').trim() : 'N/a',

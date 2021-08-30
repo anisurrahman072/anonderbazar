@@ -110,9 +110,9 @@ export class ProductService {
             .map(response => response);
     }
 
-    getTopSellProducts(): Observable<any> {
+    getTopSellProducts(from): Observable<any> {
         return this.http
-            .get(this.EndPoint + '/getTopSellProducts')
+            .get(this.EndPoint + `/getTopSellProducts?from=${from}`)
     }
 
     getNewProducts(): Observable<any> {
@@ -194,9 +194,9 @@ export class ProductService {
             .map(response => response);
     }
 
-    getCountByBrandIds(brand_ids: number[]): Observable<any> {
+    getCountByBrandIds(requestFrom, brand_ids: number[]): Observable<any> {
         return this.http
-            .get(`${this.EndPoint}/getCountByBrandIds?brand_ids=${brand_ids}`)
+            .get(`${this.EndPoint}/getCountByBrandIds?brand_ids=${brand_ids}&requestFrom=${requestFrom}`)
             .map(response => response);
     }
 }
