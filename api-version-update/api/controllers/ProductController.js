@@ -14,6 +14,7 @@ const {fetchFromCache} = require('../../libs/cache-manage');
 const _ = require('lodash');
 const {SUB_ORDER_STATUSES} = require('../../libs/subOrders');
 const {ACTIVE_WAREHOUSE_STATUS, APPROVED_PRODUCT_APPROVAL_STATUS} = require('../../libs/constants');
+const {pagination} = require('../../libs/pagination');
 
 module.exports = {
 
@@ -837,7 +838,7 @@ module.exports = {
         _where += ` LIMIT ${req.query.take} OFFSET ${req.query.skip}`;
       }
 
-      if(req.query.from && req.query.from === 'homepage') {
+      if (req.query.from && req.query.from === 'homepage') {
         _where += ` LIMIT 4 OFFSET 0 `;
       }
 
@@ -986,5 +987,50 @@ module.exports = {
       });
     }
   },
+
+  /** Method called to get related products in the products detail page using catId and SUbCat id */
+  getByCategory: async (req, res) => {
+    /*console.log('call in getBy Category: ', req.query);*/
+    try {
+      let _pagination = pagination(req.query);
+      let _where = {};
+      _where.deletedAt = null;
+      _where.approval_status = 2;
+      _where.category_id = parseInt(req.query.category_id, 10);
+      _where.subcategory_id = parseInt(req.query.subcategory_id, 10);
+
+      let total = await Product.count(_where);
+      let products = await Product.find({
+        where: _where,
+        limit: _pagination.limit,
+        skip: _pagination.skip
+      })
+        .populate('category_id')
+        .populate('subcategory_id')
+        .populate('type_id')
+        .populate('craftsman_id')
+        .populate('product_variants')
+        .populate('product_images')
+        .populate('brand_id')
+        .populate('warehouse_id')
+        .sort([
+          {createdAt: 'DESC'},
+        ]);
+
+      return res.status(200).json({
+        success: true,
+        message: `Found ${total} related products`,
+        data: [total, products]
+      });
+
+    } catch (error) {
+      console.log('error in getByCategory: ', error);
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to get the similar products',
+        error
+      });
+    }
+  }
 };
 

@@ -50,7 +50,8 @@ export const PAYMENT_METHODS_LABELS = {
 }*/
 
 export const PAGINATION = {
-    PRODUCT_PER_PAGE: 24
+    PRODUCT_PER_PAGE: 24,
+    PRODUCT_PER_PAGE_IN_DETAILS: 8,
 }
 
 export const ORDER_STATUSES = {

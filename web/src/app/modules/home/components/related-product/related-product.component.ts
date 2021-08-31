@@ -4,6 +4,7 @@ import {Offer} from "../../../../models";
 import {OfferService, ProductService} from "../../../../services";
 import {Store} from "@ngrx/store";
 import * as fromStore from "../../../../state-management";
+import {PAGINATION} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'app-related-product',
@@ -15,6 +16,9 @@ export class RelatedProductComponent implements OnInit {
     @Input() categoryId: any;
     @Input() subCategoryId: any;
     products: any;
+    public productPerPage: number = PAGINATION.PRODUCT_PER_PAGE_IN_DETAILS;
+    public productTotal: number = 0;
+    public page: number = 1;
 
     /**for offer*/
     offer$: Observable<Offer>;
@@ -36,9 +40,11 @@ export class RelatedProductComponent implements OnInit {
             this.offerData = offerData;
         })
 
-        this.productService.getByCategory(this.categoryId, this.subCategoryId)
+        this.productService.getByCategory(this.categoryId, this.subCategoryId, this.productPerPage, this.page)
             .subscribe(relatedProduct => {
-                this.products = relatedProduct;
+                this.productTotal = relatedProduct.data[0];
+                this.products = relatedProduct.data[1];
+               /* console.log('toatl produ for related products: ', this.products);*/
 
                 if (this.products) {
                     this.products.forEach(product => {
@@ -57,5 +63,11 @@ export class RelatedProductComponent implements OnInit {
             }, error => {
                 console.log('similar products error: ', error);
             });
+    }
+
+    /** Event method for pagination change */
+    onPageChange(event) {
+        this.page = event;
+        this.ngOnInit();
     }
 }

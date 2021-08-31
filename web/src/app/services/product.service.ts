@@ -133,9 +133,10 @@ export class ProductService {
             .map(response => response);
     }
 
-    getByCategory(catId: number, subCatID: number): Observable<any> {
+    getByCategory(catId: number, subCatID: number, limit: number, page: number): Observable<any> {
         return this.http
-            .get(`${this.EndPoint}?where={"deletedAt":null, "approval_status": 2,"category_id":${catId},"subcategory_id":${subCatID}}&sort=createdAt%20DESC`)
+            /*.get(`${this.EndPoint}?where={"deletedAt":null, "approval_status": 2,"category_id":${catId},"subcategory_id":${subCatID}}&sort=createdAt%20DESC&limit=${limit}&page=${page}`)*/
+            .get(`${this.EndPoint}/getByCategory?category_id=${catId}&subcategory_id=${subCatID}&limit=${limit}&page=${page}`)
             .map(response => response);
     }
 
