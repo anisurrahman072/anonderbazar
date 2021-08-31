@@ -110,9 +110,12 @@ export class ProductService {
             .map(response => response);
     }
 
-    getTopSellProducts(from): Observable<any> {
-        return this.http
-            .get(this.EndPoint + `/getTopSellProducts?from=${from}`)
+    getTopSellProducts(from, pagination = {page: null, limit: null}): Observable<any> {
+        let _url = `${this.EndPoint}/getTopSellProducts?from=${from}`;
+        if (pagination.page && pagination.limit) {
+            _url += `&page=${pagination.page}&limit=${pagination.limit}`;
+        }
+        return this.http.get(_url);
     }
 
     getNewProducts(): Observable<any> {

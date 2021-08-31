@@ -832,6 +832,11 @@ module.exports = {
           AND warehouse.status = 2
           AND products.approval_status = 2
         `;
+
+      let total = await orderNativeQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where + ' GROUP BY subOrderItems.product_id ');
+      // console.log('aaaaaall: ', total.rows.length);
+      let totalProducts = total.rows.length;
+
       _where += ' GROUP BY productId ORDER BY total_quantity DESC ';
 
       if (req.query.skip && req.query.take) {
@@ -840,6 +845,16 @@ module.exports = {
 
       if (req.query.from && req.query.from === 'homepage') {
         _where += ` LIMIT 4 OFFSET 0 `;
+      } else if(req.query.from && req.query.from === 'topsell'){
+        if(req.query.page && req.query.limit){
+          if(req.query.page == 1){
+            _where += ` LIMIT ${req.query.limit} OFFSET 0 `;
+          } else {
+            _where += ` LIMIT ${req.query.limit} OFFSET ${(req.query.page - 1) * req.query.limit} `;
+          }
+        } else {
+          _where += ` LIMIT 12 OFFSET 0 `;
+        }
       }
 
       const rawResult = await orderNativeQuery(rawSelect + fromSQL + _where);
@@ -847,7 +862,8 @@ module.exports = {
       return res.status(200).json({
         success: true,
         message: 'Successfully fetched all sold products with Top Sell Order',
-        data: rawResult.rows
+        data: rawResult.rows,
+        totalProducts: totalProducts
       });
 
     } catch (error) {
