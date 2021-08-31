@@ -181,7 +181,9 @@
                              aria-labelledby="pills-home-tab">
                             <div class="row">
                                 <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-4"
-                                     *ngFor="let product of (allProductsByCategory | paginate: { itemsPerPage: productPerPage, currentPage: page })">
+                                     *ngFor="let product of (allProductsByCategory |
+                                      paginate: { itemsPerPage: productPerPage,
+                                        currentPage: page, totalItems: productTotal })">
                                     <app-product-item [dataProduct]="product"></app-product-item>
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-12 mb-4 ml-3 text-center"
@@ -191,13 +193,14 @@
                                          alt="No Product is available.">
                                 </div>
                             </div>
-                            <pre>
-                                {{allProductsByCategory.length}}
-                            </pre>
-                            <ul>
+                            <!-- <pre>
+                                itemsPerPage: {{productPerPage}},
+                                    currentPage: {{page}}, totalItems: {{productTotal}} }
+                            </pre> -->
+                            <!-- <ul>
                                 <li *ngFor="let item of ['a', '3', '4', 'a', '3', '4', 'a', '3', '4'] |
                                 paginate: { itemsPerPage: 2, currentPage: currentPage, itemsPerPage: productPerPage, totalItems: 500 }"> ... </li>
-                              </ul>
+                              </ul> -->
                                          
                               
                             <div class="text-center">
