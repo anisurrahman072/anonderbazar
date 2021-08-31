@@ -14,6 +14,7 @@ const {fetchFromCache} = require('../../libs/cache-manage');
 const _ = require('lodash');
 const {SUB_ORDER_STATUSES} = require('../../libs/subOrders');
 const {ACTIVE_WAREHOUSE_STATUS, APPROVED_PRODUCT_APPROVAL_STATUS} = require('../../libs/constants');
+const {pagination} = require('../../libs/pagination');
 const {performance} = require('perf_hooks');
 
 module.exports = {
@@ -981,14 +982,29 @@ module.exports = {
           AND warehouse.status = 2
           AND products.approval_status = 2
         `;
+
+      let total = await orderNativeQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where + ' GROUP BY subOrderItems.product_id ');
+      // console.log('aaaaaall: ', total.rows.length);
+      let totalProducts = total.rows.length;
+
       _where += ' GROUP BY productId ORDER BY total_quantity DESC ';
 
       if (req.query.skip && req.query.take) {
         _where += ` LIMIT ${req.query.take} OFFSET ${req.query.skip}`;
       }
 
-      if(req.query.from && req.query.from === 'homepage') {
+      if (req.query.from && req.query.from === 'homepage') {
         _where += ` LIMIT 4 OFFSET 0 `;
+      } else if(req.query.from && req.query.from === 'topsell'){
+        if(req.query.page && req.query.limit){
+          if(req.query.page == 1){
+            _where += ` LIMIT ${req.query.limit} OFFSET 0 `;
+          } else {
+            _where += ` LIMIT ${req.query.limit} OFFSET ${(req.query.page - 1) * req.query.limit} `;
+          }
+        } else {
+          _where += ` LIMIT 12 OFFSET 0 `;
+        }
       }
 
       const rawResult = await orderNativeQuery(rawSelect + fromSQL + _where);
@@ -999,7 +1015,8 @@ module.exports = {
       return res.status(200).json({
         success: true,
         message: 'Successfully fetched all sold products with Top Sell Order',
-        data: rawResult.rows
+        data: rawResult.rows,
+        totalProducts: totalProducts
       });
 
     } catch (error) {
@@ -1169,5 +1186,50 @@ module.exports = {
       });
     }
   },
+
+  /** Method called to get related products in the products detail page using catId and SUbCat id */
+  getByCategory: async (req, res) => {
+    /*console.log('call in getBy Category: ', req.query);*/
+    try {
+      let _pagination = pagination(req.query);
+      let _where = {};
+      _where.deletedAt = null;
+      _where.approval_status = 2;
+      _where.category_id = parseInt(req.query.category_id, 10);
+      _where.subcategory_id = parseInt(req.query.subcategory_id, 10);
+
+      let total = await Product.count(_where);
+      let products = await Product.find({
+        where: _where,
+        limit: _pagination.limit,
+        skip: _pagination.skip
+      })
+        .populate('category_id')
+        .populate('subcategory_id')
+        .populate('type_id')
+        .populate('craftsman_id')
+        .populate('product_variants')
+        .populate('product_images')
+        .populate('brand_id')
+        .populate('warehouse_id')
+        .sort([
+          {createdAt: 'DESC'},
+        ]);
+
+      return res.status(200).json({
+        success: true,
+        message: `Found ${total} related products`,
+        data: [total, products]
+      });
+
+    } catch (error) {
+      console.log('error in getByCategory: ', error);
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to get the similar products',
+        error
+      });
+    }
+  }
 };
 

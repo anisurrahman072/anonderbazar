@@ -16,14 +16,14 @@ export class ProductService {
         this.getFlashDealsProducts();
     }
 
-    filter_result(searchTerm: string, typeList: number[], categoryList: number[], warehouses: number[], craftsmanList: number[], subcategoryList: number[], brandList: number[], subsubcategoryList: number[], priceRange: number[], sortTitle: string, sortTerm: String, pageno: number, isFeatured: any = null): Observable<any> {
+    filter_result(searchTerm: string, typeList: number[], categoryList: number[], warehouses: number[], craftsmanList: number[], subcategoryList: number[], brandList: number[], subsubcategoryList: number[], priceRange: number[], sortTitle: string, sortTerm: String, pageno: number, limit: number, isFeatured: any = null): Observable<any> {
 
         const searchTermEncoded = encodeURIComponent(searchTerm);
 
         /*console.log('searchTerm', searchTermEncoded);*/
-        let url = `${this.EndPoint2}/search?filters={"searchTerm":"${searchTermEncoded}", "approval_status": 2, "typeList":[${categoryList}],"categoryList":[${subcategoryList}], "brandList":[${brandList}], "warehousesList":[${warehouses}],"subcategoryList":[${subsubcategoryList}], "craftsmanList":[${craftsmanList}], "priceRange":[${priceRange}]}&sortTitle=${sortTitle}&sortTerm=${sortTerm}&limit=500&page=${pageno}`;
+        let url = `${this.EndPoint2}/search?filters={"searchTerm":"${searchTermEncoded}", "approval_status": 2, "typeList":[${categoryList}],"categoryList":[${subcategoryList}], "brandList":[${brandList}], "warehousesList":[${warehouses}],"subcategoryList":[${subsubcategoryList}], "craftsmanList":[${craftsmanList}], "priceRange":[${priceRange}]}&sortTitle=${sortTitle}&sortTerm=${sortTerm}&limit=${limit}&page=${pageno}`;
         if (isFeatured !== null) {
-            url = `${this.EndPoint2}/search?filters={"searchTerm":"${searchTermEncoded}", "approval_status": 2, "featured": ${isFeatured}, "typeList":[${categoryList}], "categoryList":[${subcategoryList}], "brandList":[${brandList}], "warehousesList":[${warehouses}],"subcategoryList":[${subsubcategoryList}], "craftsmanList":[${craftsmanList}], "priceRange":[${priceRange}]}&sortTitle=${sortTitle}&sortTerm=${sortTerm}&limit=500&page=${pageno}`;
+            url = `${this.EndPoint2}/search?filters={"searchTerm":"${searchTermEncoded}", "approval_status": 2, "featured": ${isFeatured}, "typeList":[${categoryList}], "categoryList":[${subcategoryList}], "brandList":[${brandList}], "warehousesList":[${warehouses}],"subcategoryList":[${subsubcategoryList}], "craftsmanList":[${craftsmanList}], "priceRange":[${priceRange}]}&sortTitle=${sortTitle}&sortTerm=${sortTerm}&limit=${limit}&page=${pageno}`;
         }
         return this.http.get(url);
     }
@@ -110,9 +110,12 @@ export class ProductService {
             .map(response => response);
     }
 
-    getTopSellProducts(from): Observable<any> {
-        return this.http
-            .get(this.EndPoint + `/getTopSellProducts?from=${from}`)
+    getTopSellProducts(from, pagination = {page: null, limit: null}): Observable<any> {
+        let _url = `${this.EndPoint}/getTopSellProducts?from=${from}`;
+        if (pagination.page && pagination.limit) {
+            _url += `&page=${pagination.page}&limit=${pagination.limit}`;
+        }
+        return this.http.get(_url);
     }
 
     getNewProducts(): Observable<any> {
@@ -133,9 +136,10 @@ export class ProductService {
             .map(response => response);
     }
 
-    getByCategory(catId: number, subCatID: number): Observable<any> {
+    getByCategory(catId: number, subCatID: number, limit: number, page: number): Observable<any> {
         return this.http
-            .get(`${this.EndPoint}?where={"deletedAt":null, "approval_status": 2,"category_id":${catId},"subcategory_id":${subCatID}}&sort=createdAt%20DESC`)
+            /*.get(`${this.EndPoint}?where={"deletedAt":null, "approval_status": 2,"category_id":${catId},"subcategory_id":${subCatID}}&sort=createdAt%20DESC&limit=${limit}&page=${page}`)*/
+            .get(`${this.EndPoint}/getByCategory?category_id=${catId}&subcategory_id=${subCatID}&limit=${limit}&page=${page}`)
             .map(response => response);
     }
 

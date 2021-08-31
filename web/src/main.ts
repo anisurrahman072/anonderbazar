@@ -9,7 +9,7 @@ if (environment.production) {
     enableProdMode();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+// document.addEventListenesr('DOMContentLoaded', () => {
     platformBrowserDynamic().bootstrapModule(AppModule)
         .catch(err => console.log(err));
-});
+// });s
