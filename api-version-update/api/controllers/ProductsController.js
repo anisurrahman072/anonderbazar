@@ -397,12 +397,13 @@ module.exports = {
 
       return res.status(200).json({
         success: true,
-        message: 'get product in search',
+        message: `get ${total} product(s) in search`,
         total,
         data: products,
-        limit: _pagination.limit,
-        skip: _pagination.skip,
-        page: _pagination.page
+        ..._pagination
+        // limit: _pagination.limit,
+        // skip: _pagination.skip,
+        // page: _pagination.page
       });
     } catch (error) {
       console.log('error', error);

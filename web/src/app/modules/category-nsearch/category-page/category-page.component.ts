@@ -41,9 +41,9 @@ export class CategoryPageComponent implements OnInit {
     @Input() showAtert: boolean;
     @Input() productname: any;
     @Input() productprice: any;
-    public currentPage: number = 1;
     public productPerPage: number = PAGINATION.PRODUCT_PER_PAGE;
-    page;
+    public productTotal: number = 0;
+    public page: number = 1;
     private queryParams: any;
     allProducts: any;
     allProductsByCategory: any;
@@ -229,7 +229,8 @@ export class CategoryPageComponent implements OnInit {
             const queryParamRes = this.handleQueryParams(queryParams);
 
             if (!paramRes && !queryParamRes) {
-                this.page = queryParams.page ? queryParams.page : 1;
+                // this.page = queryParams.page ? queryParams.page : 1;
+                this.page = queryParams.page;
                 this.isLoading = false;
                 return false;
             }
@@ -269,6 +270,7 @@ export class CategoryPageComponent implements OnInit {
                 .subscribe((result: any) => {
                     /*console.log('filterSearchObservable-result', result.data);*/
                     if (result && result.data) {
+                        this.productTotal = result.total;
                         this.allProductsByCategory = result.data.filter(product => {
                             /*console.log('this.allProductsByCategory if==>', this.allProductsByCategory);*/
                             return (product.warehouse_id.status == 2 && !product.warehouse_id.deletedAt);
@@ -351,17 +353,17 @@ export class CategoryPageComponent implements OnInit {
     //Method called for product filtering
     handleQueryParams(queryParams) {
 
-        const oldQueryParam = {...this.queryParams};
-        const newQueryParam = {...queryParams};
-        if (oldQueryParam.page) {
-            delete oldQueryParam.page;
-        }
-        if (newQueryParam.page) {
-            delete newQueryParam.page;
-        }
-        if (_.isEqual(newQueryParam, oldQueryParam)) {
-            return false;
-        }
+        // const oldQueryParam = {...this.queryParams};
+        // const newQueryParam = {...queryParams};
+        // if (oldQueryParam.page) {
+        //     delete oldQueryParam.page;
+        // }
+        // if (newQueryParam.page) {
+        //     delete newQueryParam.page;
+        // }
+        // if (_.isEqual(newQueryParam, oldQueryParam)) {
+        //     return false;
+        // }
 
         this.queryParams = queryParams;
 
@@ -647,7 +649,7 @@ export class CategoryPageComponent implements OnInit {
                 this.priceRange,
                 this.sortTitle,
                 this.sortTerm,
-                1,
+                this.page,
                 PAGINATION.PRODUCT_PER_PAGE,
                 0
             );
@@ -824,6 +826,7 @@ export class CategoryPageComponent implements OnInit {
         query.page = event;
 
         this.router.navigate(['/products', this.route.snapshot.params], {queryParams: query});
+        this.ngOnInit();
     }
 
     private handleParamInit(params) {
