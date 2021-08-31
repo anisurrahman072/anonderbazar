@@ -832,8 +832,8 @@ module.exports = {
           AND products.approval_status = 2
         `;
 
-      let total = await orderNativeQuery('SELECT COUNT(*) as totalCount ' + fromSQL + ' GROUP BY subOrderItems.product_id ');
-      console.log('aaaaaall: ', total.rows.length);
+      let total = await orderNativeQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where + ' GROUP BY subOrderItems.product_id ');
+      // console.log('aaaaaall: ', total.rows.length);
       let totalProducts = total.rows.length;
 
       _where += ' GROUP BY productId ORDER BY total_quantity DESC ';
@@ -856,10 +856,7 @@ module.exports = {
         }
       }
 
-
       const rawResult = await orderNativeQuery(rawSelect + fromSQL + _where);
-      // console.log('aaaaaasceee: ', rawResult.rows.length, rawResult.rows);
-      console.log('Anisss');
 
       return res.status(200).json({
         success: true,
