@@ -5,12 +5,12 @@
             <h4 class="section-title" style="">Top Selling Products</h4>
         </div>
         <div class="row">
-            <div class="col-lg-3 col-md-3 col-6 mb-4" *ngFor="let product of (topSellProducts | paginate: { itemsPerPage: 12, currentPage: page }) ; let i=index">
+            <div class="col-lg-3 col-md-3 col-6 mb-4" *ngFor="let product of (topSellProducts | paginate: { itemsPerPage: 12, currentPage: page, totalItems: totalProducts }) ; let i=index">
                 <app-product-item [dataProduct]="product"></app-product-item>
             </div>
         </div>
         <div class="row text-center">
-            <pagination-controls (pageChange)="page = $event" previousLabel="Previous" nextLabel="Next">
+            <pagination-controls (pageChange)="onPageChange($event)" previousLabel="Previous" nextLabel="Next">
             </pagination-controls>
         </div>
 
