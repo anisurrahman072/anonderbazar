@@ -29,7 +29,7 @@ import {Subscription} from "rxjs/Subscription";
 import {Offer} from "../../../models";
 import {Store} from "@ngrx/store";
 import * as fromStore from "../../../state-management";
-import {WAREHOUSE_STATUS} from '../../../../environments/global_config';
+import {PAGINATION, WAREHOUSE_STATUS} from '../../../../environments/global_config';
 
 @Component({
     selector: "app-category-page",
@@ -41,6 +41,8 @@ export class CategoryPageComponent implements OnInit {
     @Input() showAtert: boolean;
     @Input() productname: any;
     @Input() productprice: any;
+    public currentPage: number = 1;
+    public productPerPage: number = PAGINATION.PRODUCT_PER_PAGE;
     page;
     private queryParams: any;
     allProducts: any;
@@ -646,6 +648,7 @@ export class CategoryPageComponent implements OnInit {
                 this.sortTitle,
                 this.sortTerm,
                 1,
+                PAGINATION.PRODUCT_PER_PAGE,
                 0
             );
     }
