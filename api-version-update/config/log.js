@@ -21,6 +21,7 @@ let commonSettings = {
     }),
     prettyPrint()
   ),
+  maxSize: 100000000,
   json: true
 };
 
