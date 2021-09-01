@@ -16,9 +16,12 @@ const {
 } = require('../../libs/constants');
 const {ORDER_STATUSES} = require('../../libs/orders');
 const {verifyPayment} = require('../../libs/nagadHelper');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   callbackCheckout: async (req, res) => {
+    const time1 = performance.now();
+
     let params = req.allParams();
     console.log('Nagad Response Is: ', params);
     if (!params) {
@@ -163,6 +166,9 @@ module.exports = {
 
       await PaymentService.sendEmail(orderForMail);
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.writeHead(301,
         {
           Location: sslWebUrl + '/checkout?order=' + order.id
@@ -171,6 +177,8 @@ module.exports = {
       res.end();
 
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.writeHead(301,
         {
           Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Error occurred while completion of payment!')
@@ -181,6 +189,8 @@ module.exports = {
   },
 
   callbackCheckoutForPartial: async (req, res) => {
+    const time1 = performance.now();
+
     let params = req.allParams();
 
     if (!params) {
@@ -305,6 +315,9 @@ module.exports = {
         });
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.writeHead(301,
         {
           Location: sslWebUrl + '/profile/orders/invoice/' + order.id
@@ -314,6 +327,8 @@ module.exports = {
     } catch (error){
       logger.orderLogAuth(req, error);
       console.log('finalError', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.writeHead(301,
         {
           Location: sslWebUrl + '/profile/orders'

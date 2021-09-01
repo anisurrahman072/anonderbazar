@@ -6,6 +6,8 @@
  */
 
 const {isResourceOwner} = require('../../libs/check-permissions');
+const {performance} = require('perf_hooks');
+
 module.exports = {
 
   //Method called for deleting cart item data
@@ -177,7 +179,11 @@ module.exports = {
       }
 */
       let offeredProducts = await sails.helpers.cacheRead('getAllOfferedProducts');
-      // console.log('######### getAllOfferedProducts from cache ############', offeredProducts);
+      if(!offeredProducts){
+        sails.log.debug('######### getAllOfferedProducts not found in cache ############');
+        offeredProducts = await OfferService.getAllOfferedProducts();
+        await sails.helpers.cacheWrite('getAllOfferedProducts', 3600, JSON.stringify(offeredProducts));
+      }
 
       let previousCartItems = await CartItem.find({
         cart_id: req.body.cart_id,

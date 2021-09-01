@@ -13,7 +13,11 @@ import * as fromStore from "../../../state-management";
 export class TopSellComponent implements OnInit {
 
     topSellProducts: any;
-    page: any;
+
+    /** Pagination related variable */
+    page: any = 1;
+    limit: number = 12;
+    totalProducts: any;
 
     /**offer related variables*/
     offer$: Observable<Offer>;
@@ -32,10 +36,14 @@ export class TopSellComponent implements OnInit {
         this.offer$ = this.store.select<any>(fromStore.getOffer);
         this.offer$.subscribe(offerData => {
             this.offerData = offerData;
+            this.getTopSellProducts();
         })
+    }
 
-        this.productService.getTopSellProducts('topsell').subscribe(arg => {
+    getTopSellProducts(){
+        this.productService.getTopSellProducts('topsell', {page: this.page, limit: this.limit}).subscribe(arg => {
             this.topSellProducts = arg.data;
+            this.totalProducts = arg.totalProducts;
             /*this is in the top sell page*/
             /** finding out the products exists in the offer store*/
             this.topSellProducts.forEach(product => {
@@ -53,4 +61,8 @@ export class TopSellComponent implements OnInit {
         });
     }
 
+    onPageChange($event){
+        this.page = $event;
+        this.getTopSellProducts();
+    }
 }

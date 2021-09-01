@@ -181,7 +181,9 @@
                              aria-labelledby="pills-home-tab">
                             <div class="row">
                                 <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-4"
-                                     *ngFor="let product of (allProductsByCategory | paginate: { itemsPerPage: 24, currentPage: page })">
+                                     *ngFor="let product of (allProductsByCategory |
+                                      paginate: { itemsPerPage: productPerPage,
+                                        currentPage: page, totalItems: productTotal })">
                                     <app-product-item [dataProduct]="product"></app-product-item>
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-12 mb-4 ml-3 text-center"
@@ -191,12 +193,30 @@
                                          alt="No Product is available.">
                                 </div>
                             </div>
-                            <div class="text-center" *ngIf="allProductsByCategory && allProductsByCategory.length > 24">
+                            <!-- <pre>
+                                itemsPerPage: {{productPerPage}},
+                                    currentPage: {{page}}, totalItems: {{productTotal}} }
+                            </pre> -->
+                            <!-- <ul>
+                                <li *ngFor="let item of ['a', '3', '4', 'a', '3', '4', 'a', '3', '4'] |
+                                paginate: { itemsPerPage: 2, currentPage: currentPage, itemsPerPage: productPerPage, totalItems: 500 }"> ... </li>
+                              </ul> -->
+                                         
+                              
+                            <div class="text-center">
+                                <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+                                <!-- <pagination-controls (pageChange)="onPageChange($event)" previousLabel="Previous"
+                                                     maxSize="500" responsive="true"
+                                                     nextLabel="Next">
+                                </pagination-controls> -->
+                            </div>
+
+                            <!-- <div class="text-center" *ngIf="allProductsByCategory && allProductsByCategory.length > 24">
                                 <pagination-controls (pageChange)="onPageChange($event)" previousLabel="Previous"
                                                      maxSize="5" responsive="true"
                                                      nextLabel="Next">
                                 </pagination-controls>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="tab-pane fade" id="pills-profile" role="tabpanel"
                              aria-labelledby="pills-profile-tab">

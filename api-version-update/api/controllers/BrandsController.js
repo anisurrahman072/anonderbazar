@@ -7,12 +7,15 @@
 const Promise = require('bluebird');
 const _ = require('lodash');
 const {pagination} = require('../../libs/pagination');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   //Method called for getting brandsByCategories data
   //Model models/Brand.js
   brandsByCategories: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let categories = await Category.find({deletedAt: null, parent_id: 0, type_id: 2}).populate('offer_id');
 
       let categoryIds = categories.map((cat)=> {
@@ -81,12 +84,17 @@ module.exports = {
         };
       });
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         data: _.keyBy(allRows, 'category_id'),
         message: 'success'
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.json(400, {message: 'Something went wrong!', error});
     }
   },
@@ -95,6 +103,8 @@ module.exports = {
   shopbybrand: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
 
       let rawSelect = `
@@ -128,12 +138,17 @@ module.exports = {
         }
       });
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         data: brands,
         message: 'success'
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.json(400, {message: 'Something went wrong!', error});
     }
   },
@@ -141,6 +156,7 @@ module.exports = {
   //Model models/Brand.js
   index: async (req, res) => {
     try {
+      const time1 = performance.now();
 
       let _pagination = pagination(req.query);
 
@@ -181,6 +197,9 @@ module.exports = {
         sort: _sort
       });
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalBrand,
@@ -191,6 +210,8 @@ module.exports = {
         data: brands
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All brands with pagination';
       res.status(400).json({
         success: false,
@@ -203,10 +224,14 @@ module.exports = {
   //Model models/Brand.js
   findOne: async (req, res) => {
     try {
+      const time1 = performance.now();
 
       let brand = await Brand.findOne({
         id: req.params.id
       });
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json({
         success: true,
@@ -214,6 +239,8 @@ module.exports = {
         data: brand
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'error in read single farmer';
       res.status(400).json({
         success: false,

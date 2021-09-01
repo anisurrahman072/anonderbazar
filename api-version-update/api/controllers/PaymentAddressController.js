@@ -5,6 +5,8 @@
  */
 
 const {isResourceOwner} = require('../../libs/check-permissions');
+const {performance} = require('perf_hooks');
+
 module.exports = {
 
   authUserAddresses: async (req, res) => {
@@ -12,6 +14,7 @@ module.exports = {
     /*console.log('authUserAddresses');*/
     const authUser = req.token.userInfo;
     /*console.log('authUser', authUser);*/
+    const time1 = performance.now();
 
     try {
       const foundPaymentAddress = await PaymentAddress.find({
@@ -22,10 +25,15 @@ module.exports = {
         .populate('zila_id')
         .populate('division_id');
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(foundPaymentAddress);
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Problems!',
@@ -36,6 +44,8 @@ module.exports = {
   update: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       const foundPaymentAddress = await PaymentAddress.findOne({
         id: req.param('id')
       });
@@ -48,9 +58,14 @@ module.exports = {
         id: req.param('id')
       }).set(req.body);
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(201).json(paymentAddress);
 
     } catch (error) {
+
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
 
       return res.status(400).json({
         success: false,
@@ -64,6 +79,8 @@ module.exports = {
     console.log('Payment Address destroy');
 
     try {
+      const time1 = performance.now();
+
       const foundPaymentAddress = await PaymentAddress.findOne({
         id: req.param('id')
       });
@@ -75,10 +92,15 @@ module.exports = {
       const paymentAddress = await PaymentAddress.update({id: req.param('id')})
         .set({deletedAt: new Date()}).fetch();
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(202).json(paymentAddress);
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json(error);
     }
   },

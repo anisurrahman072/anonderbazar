@@ -10,16 +10,24 @@ const Promise = require('bluebird');
 const {pagination} = require('../../libs/pagination');
 const {PARTIAL_ORDER_TYPE} = require('../../libs/constants');
 const {ORDER_STATUSES} = require('../../libs/orders');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   // destroy a row
   destroy: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const user = await SuborderItem.updateOne(
         {id: req.param('id')},
       ).set({deletedAt: new Date()});
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(user);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.json(error.status, {message: '', error, success: false});
     }
   },
@@ -27,6 +35,8 @@ module.exports = {
     const SuborderItemQuery = Promise.promisify(SuborderItem.getDatastore().sendNativeQuery);
     const StatusChangeQuery = Promise.promisify(StatusChange.getDatastore().sendNativeQuery);
     try {
+      const time1 = performance.now();
+
       let rawSelect = `
       SELECT
           suborder_item.id as id,
@@ -107,6 +117,9 @@ module.exports = {
         subOrderStatuses = rawResultStatuses.rows;
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         total: totalSuborderItems,
@@ -116,6 +129,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in getting all subOrder item List with pagination';
       return res.status(400).json({
         success: false,
@@ -128,6 +143,8 @@ module.exports = {
   getOrdersByDate: async (req, res) => {
     try {
       const SuborderItemQuery = Promise.promisify(SuborderItem.getDatastore().sendNativeQuery);
+
+      const time1 = performance.now();
 
       let rawSelect = `
       SELECT
@@ -261,9 +278,14 @@ module.exports = {
       */
 
       console.log('The result is: ', rawResult.rows);
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(rawResult.rows);
     } catch (error) {
       console.log('THe error is: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json(error);
     }
   },
@@ -271,6 +293,8 @@ module.exports = {
   getByOrderIds: async (req, res) => {
     const SuborderItemQuery = Promise.promisify(SuborderItem.getDatastore().sendNativeQuery);
     try {
+      const time1 = performance.now();
+
       let rawSelect = `
       SELECT suborder_item.id, suborder_item.product_suborder_id as suborder_id, p_order.id as order_id, suborder_item.product_id,
        products.name as product_name, products.price as price, products.code as product_code, p_order.ssl_transaction_id,
@@ -333,6 +357,9 @@ module.exports = {
         allSubOrderItems = rawResult.rows;
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         total: totalSuborderItems,
@@ -341,6 +368,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in getting all subOrder item List with pagination';
       return res.status(400).json({
         success: false,
@@ -354,6 +383,8 @@ module.exports = {
   getSuborderItems: async (req, res) => {
     const SuborderItemQuery = Promise.promisify(SuborderItem.getDatastore().sendNativeQuery);
     try {
+      const time1 = performance.now();
+
       let _pagination = pagination(req.query);
       let rawSelect = 'SELECT suborder_item.id, suborder_item.product_suborder_id as suborder_id, p_order.id as order_id, suborder_item.product_id,';
       rawSelect += ' suborder_item.warehouse_id, suborder_item.product_quantity, suborder_item.product_total_price, ';
@@ -422,6 +453,9 @@ module.exports = {
         return el;
       });
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalSuborderItems,
@@ -429,6 +463,8 @@ module.exports = {
         data: allSubOrderItems
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All SubOrderItemList with pagination';
       res.status(400).json({
         success: false,

@@ -5,12 +5,15 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const {performance} = require('perf_hooks');
 const {pagination} = require('../../libs/pagination');
 module.exports = {
   //Method called for getting all craftsman list data
   //Model models/User.js
   getAll: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let _pagination = pagination(req.query);
 
       let _where = {};
@@ -63,6 +66,9 @@ module.exports = {
         .populate('permanent_zila_id')
         .populate('permanent_division_id');
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalCraftsman,
@@ -73,6 +79,8 @@ module.exports = {
         data: craftsmans
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All craftsmans with pagination';
       res.status(400).json({
         success: false,

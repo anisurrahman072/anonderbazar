@@ -11,10 +11,13 @@ const {calculateCourierCharge} = require('../../libs/helper');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
 const {SSL_COMMERZ_PAYMENT_TYPE} = require('../../libs/constants');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   findSSLTransaction: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       console.log('req asce');
 
       let usernameTmp = req.body.username;
@@ -95,6 +98,9 @@ module.exports = {
         });
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Successfully found the transaction details from SSL commerz',
@@ -104,6 +110,8 @@ module.exports = {
       });
 
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error occurred while fetching SSL Transaction ID info',
@@ -114,6 +122,8 @@ module.exports = {
 
   generateMissingOrders: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let globalConfigs = await GlobalConfigs.findOne({
         deletedAt: null
       });
@@ -466,13 +476,20 @@ module.exports = {
       }
       catch (error){
         console.log(error);
+        sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       }
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json(orderForMail);
 
     } catch (error) {
       console.log('Error occurred while sending SMS or Mail');
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error occurred while generating order. ' + error.message

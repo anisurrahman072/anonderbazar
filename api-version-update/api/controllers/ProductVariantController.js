@@ -6,14 +6,23 @@
  */
 const _ = require('lodash');
 const async = require('async');
+const {performance} = require('perf_hooks');
+
 module.exports = {
   //Method called for deleting a product variant
   //Model models/ProductVariant.js
   destroy: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const productVariant = await ProductVariant.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(productVariant);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All category with pagination';
       return res.status(400).json({
         success: false,
@@ -28,6 +37,8 @@ module.exports = {
   create: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       // eslint-disable-next-line eqeqeq
       if (req.body.variant_type == 0) {
 
@@ -39,12 +50,21 @@ module.exports = {
           warehouses_variant_id: req.body.warehouses_variant_id
         };
         const productVariant = await ProductVariant.create(body).fetch();
+
+        const time2 = performance.now();
+        sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.json(200, productVariant);
       } else {
         const productVariant = await ProductVariant.create(req.body).fetch();
+        const time2 = performance.now();
+        sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.json(200, productVariant);
       }
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = '';
       return res.status(400).json({
         success: false,
@@ -64,6 +84,8 @@ module.exports = {
     }
 
     try {
+      const time1 = performance.now();
+
       const productVariants = await ProductVariant.find({product_id: req.param('product_id'), deletedAt: null})
         .populate(['variant_id', 'warehouses_variant_id']);
 
@@ -86,10 +108,15 @@ module.exports = {
         if (error) {
           return res.negotiate(error);
         }
+        const time2 = performance.now();
+        sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.ok(data);
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = '';
       return res.status(400).json({
         success: false,

@@ -6,6 +6,7 @@
  */
 
 const {pagination} = require('../../libs/pagination');
+const {performance} = require('perf_hooks');
 
 module.exports = {
 
@@ -14,6 +15,8 @@ module.exports = {
 
   getAllGroups: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let _pagination = pagination(req.query);
 
       let rawSQL = `
@@ -36,6 +39,9 @@ module.exports = {
 
       let totalGroups = await Group.count().where({deletedAt: null});
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalGroups,
@@ -48,6 +54,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Failed to get all all existing groups with pagination';
       res.status(400).json({
         success: false,
@@ -61,10 +69,17 @@ module.exports = {
   /**model: Group.js*/
   deleteGroup: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const group = await Group.updateOne({id: req.query.id}).set({deletedAt: new Date()});
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(200, group);
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         message: 'Failed to delete a group',
         error
@@ -77,6 +92,8 @@ module.exports = {
 
   getAllGroupsPermissions: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let rawSQL = `
       SELECT
             GROUP_CONCAT(perm_key) AS perm_keys,
@@ -92,6 +109,9 @@ module.exports = {
 
       let rawPermissions = await sails.sendNativeQuery(rawSQL, []);
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'Successfully fetched all available group permissions',
@@ -100,6 +120,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'Failed to get all the available group permissions',
@@ -112,6 +134,8 @@ module.exports = {
   /**Model models/Group.js*/
   groupInsert: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let body = {};
 
       body.name = req.body.name;
@@ -119,6 +143,9 @@ module.exports = {
       body.accessList = JSON.parse(req.body.permissionKeysArray);
 
       let group = await Group.create(body).fetch();
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       res.status(200).json({
         success: true,
@@ -128,6 +155,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'Failed to Created a new group',
@@ -140,7 +169,12 @@ module.exports = {
   /**Model models/Group.js*/
   getGroupsById: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let group = await Group.findOne({id: req.query.id});
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'Successfully fetched group data by id',
@@ -149,6 +183,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'Failed to fetched group data by id',
@@ -162,6 +198,8 @@ module.exports = {
   groupUpdate: async (req, res) => {
     console.log('req.here: ');
     try {
+      const time1 = performance.now();
+
       let body = {};
 
       id = req.query.id;
@@ -171,6 +209,9 @@ module.exports = {
 
       let group = await Group.updateOne({id: id}).set(body);
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'Successfully Created a new group',
@@ -179,6 +220,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'Failed to Created a new group',
@@ -191,6 +234,8 @@ module.exports = {
   /**Model models/Group.js*/
   checkGroupName: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       if (!req.body.groupName) {
         return res.status(422).json({
           success: false,
@@ -211,12 +256,17 @@ module.exports = {
           isunique: false,
         });
       }
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         isunique: true,
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         isunique: false,

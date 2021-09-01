@@ -23,12 +23,15 @@ const {
 const {ORDER_STATUSES} = require('../../libs/orders');
 const {getGlobalConfig} = require('../../libs/helper');
 const moment = require('moment');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   //Method called for getting all payment data
   //Model models/Payment.js
   getAll: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let _pagination = pagination(req.query);
       const PaymentNativeQuery = Promise.promisify(Payment.getDatastore().sendNativeQuery);
 
@@ -124,6 +127,9 @@ module.exports = {
         allPayments = rawResult.rows;
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
 
       res.status(200).json({
         success: true,
@@ -136,6 +142,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All Payment with pagination';
       res.status(400).json({
         success: false,
@@ -147,6 +155,8 @@ module.exports = {
 
   changeApprovalStatus: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const paymentId = req.query.paymentId;
       const status = req.query.status;
       const orderId = req.query.orderId;
@@ -242,12 +252,17 @@ module.exports = {
 
       let updatedOrder = await Order.update({id: orderId}, _set);
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Successfully updated the approval status',
         order: updatedOrder
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error occurred while updating the approval status. ', error,
@@ -257,6 +272,8 @@ module.exports = {
 
   makeAdminPayment: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       if(!req.body || !req.body.dueAmount){
         return res.status(400).json({message: 'Due amount not provided'});
       }
@@ -305,6 +322,9 @@ module.exports = {
 
       console.log('updatedOrder: ', updatedOrder);
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Successfully updated the order & created payment',
@@ -313,6 +333,8 @@ module.exports = {
     }
     catch (error){
       console.log('Error occurred: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error occurred while creating payment'

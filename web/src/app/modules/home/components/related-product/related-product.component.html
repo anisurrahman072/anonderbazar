@@ -1,11 +1,22 @@
 <section id="productBrand" style="padding-top: 20px; padding-bottom: 0;">
     <div class="container-fluid">
         <div class="titel">
-            <h4>Related Product</h4>
+            <h4>Related Products</h4>
         </div>
-        <div class="row mt-4">
-            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mb-4 width-fix" *ngFor="let product of products">
-                <app-product-item [dataProduct]="product"></app-product-item>
+        <div class="tab-content my-5" id="pills-tabContent">
+            <div class="tab-pane fade active show" id="pills-home" role="tabpanel"
+                 aria-labelledby="pills-home-tab">
+                <div class="row">
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-4"
+                         *ngFor="let product of (products |
+                                      paginate: { itemsPerPage: productPerPage,
+                                        currentPage: page, totalItems: productTotal })">
+                        <app-product-item [dataProduct]="product"></app-product-item>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+                </div>
             </div>
         </div>
     </div>

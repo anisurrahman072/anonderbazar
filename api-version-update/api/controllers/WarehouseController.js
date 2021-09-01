@@ -6,12 +6,15 @@
  */
 const {pagination} = require('../../libs/pagination');
 const {uploadImages} = require('../../libs/helper');
+const {performance} = require('perf_hooks');
 const Promise = require('bluebird');
 module.exports = {
   //Method called for getting all warehouse data
   //Model models/Warehouse.js
   getAll: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const warehouseQuery = Promise.promisify(Warehouse.getDatastore().sendNativeQuery);
       let _pagination = pagination(req.query);
 
@@ -65,6 +68,9 @@ module.exports = {
         allWarehouses = rawResult.rows;
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalWarehouses,
@@ -78,6 +84,7 @@ module.exports = {
       let message = 'Error in Get All Warehouses with pagination';
 
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       res.status(400).json({
         success: false,
         message,
@@ -89,11 +96,16 @@ module.exports = {
   //Model models/Warehouse.js
   destroy: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       await Warehouse.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
 
       await User.update({warehouse_id: req.param('id')}).set({deletedAt: new Date()});
 
       await Product.update({warehouse_id: req.param('id')}).set({deletedAt: new Date()});
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json({
         success: false,
@@ -101,6 +113,7 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       res.status(400).json({
         success: false,
         message: 'Failed to delete warehouse',
@@ -112,6 +125,8 @@ module.exports = {
   //Model models/Warehouse.js
   createCustom: async (req, res) => {
     try {
+      const time1 = performance.now();
+
 
       console.log(req.body);
       let postBody = {...req.body};
@@ -120,6 +135,7 @@ module.exports = {
       try {
         postBody.userdata = JSON.parse(postBody.userdata);
       } catch (__) {
+        sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
         return res.status(422).json({
           success: false,
           message: 'Invalid User data'
@@ -153,6 +169,7 @@ module.exports = {
 
       } catch (err) {
         console.log('err', err);
+        sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
         return res.status(err.status).json({err: err});
       }
 
@@ -176,6 +193,9 @@ module.exports = {
           };
         });
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         user,
         warehouse
@@ -183,6 +203,7 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       return res.status(400).json({message: 'Something went wrong!', error});
     }
   },
@@ -191,6 +212,8 @@ module.exports = {
   //Model models/Warehouse.js
   updateCustom: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       console.log('update warehouse', req.body);
       let postBody = {...req.body};
 
@@ -229,6 +252,7 @@ module.exports = {
 
       } catch (err) {
         console.log('err', err);
+        sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
         return res.status(err.status).json({err: err});
       }
 
@@ -248,12 +272,16 @@ module.exports = {
           };
         });
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         user,
         warehouse
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       res.status(400).json({
         success: false,
         message: 'Failed to update warehouse',
@@ -264,8 +292,12 @@ module.exports = {
 
   updateUserStatus: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const status = req.body.status;
       await Warehouse.updateOne({id: req.param('id')}).set({status: status});
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json({
         success: true,
@@ -274,7 +306,7 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
-
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       res.status(400).json({
         success: false,
         message: 'Failed to update user status',

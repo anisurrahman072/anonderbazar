@@ -16,11 +16,15 @@ const {getPaymentService} = require('../../libs/paymentMethods');
 const {getPaymentServicePartial} = require('../../libs/paymentMethods');
 const {getAuthUser, getGlobalConfig} = require('../../libs/helper');
 const logger = require('../../libs/softbd-logger').Logger;
+const {performance} = require('perf_hooks');
+
 module.exports = {
 
   refundPayments: async function (req, res) {
 
     try {
+      const time1 = performance.now();
+
       const globalConfigs = await getGlobalConfig();
       const orderId = req.param('order_id');
       const order = await Order.findOne({id: orderId});
@@ -55,12 +59,20 @@ module.exports = {
 
         }
       }
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
     } catch (error) {
+
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
 
     }
   },
   placeOrderWithoutPayment: async function (req, res) {
     try {
+      const time1 = performance.now();
+
       const authUser = getAuthUser(req);
       const globalConfigs = await getGlobalConfig();
 
@@ -100,9 +112,14 @@ module.exports = {
         cartItems
       );
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(response);
     } catch (finalError) {
       logger.orderLogAuth(req, finalError);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         message: 'Error occurred while placing order', finalError
       });
@@ -116,6 +133,8 @@ module.exports = {
    */
   makePayment: async function (req, res) {
     try {
+      const time1 = performance.now();
+
       const authUser = getAuthUser(req);
       const globalConfigs = await getGlobalConfig();
 
@@ -152,9 +171,14 @@ module.exports = {
 
       const response = await paymentGatewayService.makePartialPayment(authUser, order, req, globalConfigs);
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(response);
     } catch (finalError) {
       logger.orderLogAuth(req, finalError);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         message: 'There was a problem in processing the payment.',
         additionalMessage: finalError.message
