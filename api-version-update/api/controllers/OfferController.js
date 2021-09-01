@@ -881,6 +881,7 @@ module.exports = {
       if(!webRegularOffers){
         sails.log.debug('######### getWebRegularOffers not found in cache ############');
         webRegularOffers = await OfferService.getWebRegularOffers();
+        await sails.helpers.cacheWrite('getWebRegularOffers', 3600, JSON.stringify(webRegularOffers));
       }
 
       const time2 = performance.now();
@@ -1134,6 +1135,7 @@ module.exports = {
       if(!finalCollectionOfProducts){
         sails.log.debug('######### getAllOfferedProducts not found in cache ############');
         finalCollectionOfProducts = await OfferService.getAllOfferedProducts();
+        await sails.helpers.cacheWrite('getAllOfferedProducts', 3600, JSON.stringify(finalCollectionOfProducts));
       }
 
       const time2 = performance.now();

@@ -714,6 +714,7 @@ module.exports = {
       if(!anonderJhor){
         sails.log.debug('######### getAnonderJhorInfo not found in cache ############');
         anonderJhor = await OfferService.getAnonderJhorInfo();
+        await sails.helpers.cacheWrite('getAnonderJhorInfo', 3600, JSON.stringify(anonderJhor));
       }
 
       const time2 = performance.now();
