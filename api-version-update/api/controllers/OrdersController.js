@@ -5,11 +5,14 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 const {Helper} = require('../../libs/HelperClass');
+const {performance} = require('perf_hooks');
 
 //Method called for getting all order products data
 //Model models/Product.js
 exports.index = async (req, res) => {
   try {
+    const time1 = performance.now();
+
 
     const _pagination = Helper.pagination(req.query);
 
@@ -72,6 +75,10 @@ exports.index = async (req, res) => {
       .populate('product_variants', {deletedAt: null})
       .populate('product_images', {deletedAt: null})
       .populate('coupon_banner_images', {deletedAt: null});
+
+    const time2 = performance.now();
+    sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
     res.status(200).json({
       success: true,
       total: totalProduct,
@@ -82,6 +89,8 @@ exports.index = async (req, res) => {
       data: products
     });
   } catch (error) {
+    sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
     const message = 'Error in Get All products with pagination';
     res.status(400).json({
       success: false,
@@ -93,6 +102,8 @@ exports.index = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
+    const time1 = performance.now();
+
 
     const _pagination = pagination(req.query);
 
@@ -156,6 +167,9 @@ exports.create = async (req, res) => {
       .populate('product_images', {deletedAt: null})
       .populate('coupon_banner_images', {deletedAt: null});
 
+    const time2 = performance.now();
+    sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
     res.status(200).json({
       success: true,
       total: totalProduct,
@@ -166,6 +180,8 @@ exports.create = async (req, res) => {
       data: products
     });
   } catch (error) {
+    sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
     const message = 'Error in Get All products with pagination';
     res.status(400).json({
       success: false,

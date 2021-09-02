@@ -7,9 +7,11 @@
 const {asyncForEach} = require('../../libs/helper');
 const {uploadImages} = require('../../libs/helper');
 const _ = require('lodash');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   removeImage: async (req, res) => {
+    const time1 = performance.now();
 
     const type = req.param('type');
     const id = req.param('id');
@@ -20,11 +22,18 @@ module.exports = {
       }).set({
         [type]: null
       });
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(201).json({
         message: true
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       res.status(400).json({message: 'server problem!', error});
     }
 
@@ -33,6 +42,7 @@ module.exports = {
   //Model models/Category.js
   create: async (req, res) => {
     try {
+      const time1 = performance.now();
 
       let body = req.body;
 
@@ -100,6 +110,8 @@ module.exports = {
 
       } catch (err) {
         console.log('err', err);
+        sails.log.error(`Request Uri: ${req.path} ########## ${err}`);
+
         return res.json(err.status, {err: err});
       }
 
@@ -111,9 +123,14 @@ module.exports = {
 
       const returnCategory = await Category.create(body).fetch();
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(returnCategory);
     } catch (err) {
       console.log(err);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({message: 'server problem!', err});
     }
   },
@@ -123,9 +140,17 @@ module.exports = {
   //Model models/Category.js
   destroyType: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const category = await Category.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(category);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.json(400, {message: 'wrong', error});
     }
 
@@ -134,9 +159,16 @@ module.exports = {
   //Model models/Category.js
   destroyProduct: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const category = await Category.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(category);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.json(400, {message: 'wrong', error});
     }
   },
@@ -145,9 +177,14 @@ module.exports = {
   //Model models/Category.js
   getType: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let categories = await Category.find({
         where: {type_id: 1, deletedAt: null}
       });
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       if (categories) {
         res.status(200).json(categories);
@@ -157,6 +194,8 @@ module.exports = {
         });
       }
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json(error);
     }
   },
@@ -164,10 +203,17 @@ module.exports = {
   //Model models/Category.js
   getProduct: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const categories = await Category.find()
         .where({type_id: 2, deletedAt: null});
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(200, categories);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json(error);
     }
   },
@@ -176,9 +222,16 @@ module.exports = {
   //Model models/Category.js
   getSingleType: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const category = await Category.findOne({id: req.param('id'), type_id: 1});
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(200, category);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json(error);
     }
   },
@@ -186,15 +239,24 @@ module.exports = {
   //Model models/Category.js
   getSingleProduct: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const category = await Category.findOne({id: req.param('id'), type_id: 2});
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(200, category);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json(error);
     }
   },
   // Creating new row in category table
   createType: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let body = req.body;
       if (body.hasImage === 'true') {
         const uploaded = await uploadImages(req.file('image0'));
@@ -207,15 +269,22 @@ module.exports = {
 
       body.type_id = 2;
       const CategoryUpload = await Category.create(body).fetch();
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(200, CategoryUpload);
 
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.json(error.status, {message: '', error, success: false});
     }
   },
   // Creating new row in product category table
   createProduct: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let body = req.body;
       if (body.hasImage === 'true') {
         const uploaded = await uploadImages.upload(req.file('image0'));
@@ -229,8 +298,13 @@ module.exports = {
         body.type_id = 2;
       }
       const created = await Category.create(body).fetch();
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(200, created);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.json(error.status, {message: '', error, success: false});
     }
   },
@@ -238,6 +312,8 @@ module.exports = {
   //Model models/Category.js
   update: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let body = req.body;
 
       if ((body.hasImage && body.hasImage === 'true') || (body.hasBannerImage && body.hasBannerImage === 'true') ||
@@ -304,9 +380,14 @@ module.exports = {
       }
 
       const updateCategory = await Category.updateOne({id: req.param('id')}).set(body);
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(updateCategory);
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(500).json({message: '', error, success: false});
     }
   },
@@ -315,6 +396,8 @@ module.exports = {
   updateType: async (req, res) => {
     let body = req.body;
     try {
+      const time1 = performance.now();
+
       if (req.body.hasImage === 'true') {
         const uploaded = await uploadImages.upload(req.file('image0'));
         if (uploaded.length === 0) {
@@ -328,8 +411,13 @@ module.exports = {
         id: req.param('id')
       }).set(body);
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(udpated);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(error.status).json({message: '', error, success: false});
     }
   },
@@ -337,6 +425,8 @@ module.exports = {
   //Model models/Category.js
   updateProduct: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let body = req.body;
       if (body.hasImage === 'true') {
         const uploaded = await uploadImages.upload(req.file('image0'));
@@ -351,8 +441,13 @@ module.exports = {
         id: req.param('id')
       }).set(body);
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(udpated);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(error.status).json({message: '', error, success: false});
     }
   },
@@ -360,14 +455,21 @@ module.exports = {
 
   allCategories: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let categories = await sails.helpers.cacheRead('allCategories');
       if(!categories){
         categories = await CacheService.allCategories();
         console.log('######## Server cache writing for allCategories ###########');
         await sails.helpers.cacheWrite('allCategories', 86400, JSON.stringify(categories));
       }
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(categories);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       return res.status(error.status).json({message: '', error, success: false});
     }
   },
@@ -376,6 +478,8 @@ module.exports = {
   //Model models/Category.js
   withSubcategories: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let categories = await Category.find({deletedAt: null, parent_id: 0, type_id: 2})
         .populate('offer_id');
 
@@ -384,8 +488,13 @@ module.exports = {
         return item;
       }));
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(allCategories);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(error.status).json({message: '', error, success: false});
     }
   },
@@ -394,14 +503,22 @@ module.exports = {
   //Model models/Category.js
   withSubcategoriesV2: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let allCategories = await sails.helpers.cacheRead('withSubcategoriesV2');
       if(!allCategories){
         allCategories = await CacheService.withSubcategoriesV2();
         console.log('######## Server cache writing for withSubcategoriesV2 ###########');
         await sails.helpers.cacheWrite('withSubcategoriesV2', 86400, JSON.stringify(allCategories));
       }
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(allCategories);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(error.status).json({message: '', error, success: false});
     }
   },
@@ -410,6 +527,8 @@ module.exports = {
   //Model models/Category.js
   withProductSubcategory: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let categories = await Category.find({
         type_id: 2,
         deletedAt: null,
@@ -423,12 +542,17 @@ module.exports = {
         });
       });
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'product category with subcategory',
         data: categories
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: '',

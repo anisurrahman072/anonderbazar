@@ -6,9 +6,13 @@
  */
 const Promise = require('bluebird');
 const _ = require('lodash');
+const {performance} = require('perf_hooks');
+
 module.exports = {
   byPageNSectionNSubsection: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const cmsNativeQuery = Promise.promisify(CMS.getDatastore().sendNativeQuery);
       let rawSelect = ` SELECT  *  `;
       let fromSQL = ` FROM cms `;
@@ -44,10 +48,15 @@ module.exports = {
         });
       });
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(finalRows);
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         error
@@ -56,6 +65,8 @@ module.exports = {
   },
   byPageNSection: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const cmsNativeQuery = Promise.promisify(CMS.getDatastore().sendNativeQuery);
       let rawSelect = ` SELECT  *  `;
       let fromSQL = ` FROM cms `;
@@ -78,10 +89,15 @@ module.exports = {
         return row.page + '_' + row.section;
       });
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(finalRows);
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         error

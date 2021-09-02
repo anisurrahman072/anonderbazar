@@ -28,10 +28,13 @@ const {
   ANONDER_JHOR_OFFER_TYPE
 } = require('../../libs/constants');
 const {globalSmsFlag} = require('../../config/smsFlag.js');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   findOne: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const orders = await Order.findOne({id: req.param('id')})
         .populate('user_id')
         .populate('billing_address')
@@ -52,10 +55,15 @@ module.exports = {
         });
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(orders);
 
     } catch (error) {
       console.log('Error', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         message: false, error
       });
@@ -64,6 +72,8 @@ module.exports = {
 
   getOrderInvoiceData: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let orderId = req.query.orderId;
       /** Fetch order details */
       const orders = await Order.findOne({id: orderId})
@@ -101,6 +111,9 @@ module.exports = {
       });
       /** Fetch all payments log for the given order ID. END */
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Successfully fetched all data',
@@ -111,6 +124,8 @@ module.exports = {
     }
     catch (error){
       console.log('Error occurred while fetching order invoice data', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         message: false, error
       });
@@ -119,18 +134,32 @@ module.exports = {
 
   index: (req, res) => {
     try {
+      const time1 = performance.now();
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json({message: 'Not Authorized'});
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.json({error: error});
     }
   }, // destroy a row
   destroy: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const order = await Order.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(order);
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(error.status).json({error: error});
     }
   },
@@ -140,6 +169,7 @@ module.exports = {
   placeOrderForCashOnDelivery: async function (req, res) {
 
     try {
+      const time1 = performance.now();
 
       const authUser = getAuthUser(req);
 
@@ -423,12 +453,17 @@ module.exports = {
       let d = Object.assign({}, order);
       d.suborders = subordersTemp;
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.ok({
         order: d
       });
 
     } catch (finalError) {
       console.log('finalError', finalError);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         message: 'There was a problem in processing the order.', additionalMessage: finalError.message
       });
@@ -442,6 +477,8 @@ module.exports = {
     /*console.log('rozuiex n placeorder: ');*/
 
     try {
+      const time1 = performance.now();
+
       const authUser = getAuthUser(req);
       const globalConfigs = await getGlobalConfig();
 
@@ -477,10 +514,14 @@ module.exports = {
       }, {
         billingAddress, shippingAddress
       }, globalConfigs, cart, cartItems, req.file);
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(response);
 
     } catch (finalError) {
       console.log(finalError);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       logger.orderLogAuth(req, finalError);
 
       return res.status(400).json({
@@ -491,6 +532,8 @@ module.exports = {
 
   allOrders: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let _pagination = pagination(req.query);
 
       const orderQuery = Promise.promisify(Order.getDatastore().sendNativeQuery);
@@ -591,6 +634,9 @@ module.exports = {
         orders = rawResult.rows;
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         total: totalOrder,
@@ -603,6 +649,8 @@ module.exports = {
 
     } catch (error) {
       console.log('error', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in getting all orders with pagination';
       return res.status(400).json({
         success: false, message, error
@@ -612,6 +660,8 @@ module.exports = {
   //Model models/Order.js,models/SubOrder.js,models/SuborderItem.js, models/SuborderItemVariant.js
   getAllOrder: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       /* WHERE condition for .......START.....................*/
       let _where = {};
       _where.deletedAt = null;
@@ -670,10 +720,15 @@ module.exports = {
         }
       });
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(orders);
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in getting all orders with pagination';
       res.status(400).json({
         success: false, message, error
@@ -683,6 +738,8 @@ module.exports = {
   update: async (req, res) => {
     console.log('The body is: ', req.body);
     try {
+      const time1 = performance.now();
+
       let updatedOrder = await Order.updateOne({
         deletedAt: null, id: req.param('id')
       }).set(req.body);
@@ -713,10 +770,15 @@ module.exports = {
         },  customer);
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true, message: 'Successfully updated status of order', data: updatedOrder
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false, message: 'Error occurred while updating Order'
       });
@@ -725,6 +787,8 @@ module.exports = {
 
   updatePaymentStatus: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let order = await Order.findOne({
         id: req.param('id'),
         deletedAt: null
@@ -775,10 +839,15 @@ module.exports = {
       console.log('The set are: ', payment_set, _set);
       // await PaymentService.sendSms(userDetail[0], updatedOrder, [], shippingAddresses[0]);
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true, message: 'Successfully updated payment status of order', data: updatedOrder
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false, message: 'Error occurred while updating payment status'
       });
@@ -787,6 +856,8 @@ module.exports = {
 
   deleteOrder: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let updatedOrder = await Order.updateOne({
         deletedAt: null, id: req.param('id')
       }).set({
@@ -822,11 +893,16 @@ module.exports = {
         }
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true, message: 'successfully deleted the order.', order: updatedOrder
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false, message: 'Error occurred while deleting the order. ', error
       });
@@ -837,6 +913,8 @@ module.exports = {
     let params = req.allParams();
 
     try {
+      const time1 = performance.now();
+
       let paginate = pagination(params);
 
       const orderNativeQuery = Promise.promisify(Order.getDatastore().sendNativeQuery);
@@ -903,10 +981,15 @@ module.exports = {
       }
 
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true, message: 'successfully fetched cancelled order', data: canceledOrder, totalOrder
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(200).json({
         success: false, message: 'Error occurred while fetching cancelled order', error
       });
@@ -915,6 +998,8 @@ module.exports = {
 
   refundCancelOrder: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const authUser = getAuthUser(req);
       const orderId = req.param('id');
 
@@ -968,12 +1053,17 @@ module.exports = {
 
       await PaymentService.sendSmsForRefund(orderId, authUser);
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true, message: 'Successfully refunded.',
 
       });
     } catch (error) {
       console.log('Error occurred while refunding the order');
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false, message: 'Error occurred while refunding the order. ', error,
       });
@@ -982,6 +1072,8 @@ module.exports = {
 
   getAllProductsByOrderId: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const ProductQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
       let rawSelect = `
       SELECT
@@ -1044,8 +1136,13 @@ module.exports = {
       console.log('subOrderItems: ', subOrderItems);
       /** If suborder item exists in any offer then send suborder item offer payment gateway info with suborder item info. END */
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(subOrderItems);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         message: 'Failed to fetch the products!'
       });

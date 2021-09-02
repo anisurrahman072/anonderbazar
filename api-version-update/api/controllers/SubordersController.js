@@ -10,11 +10,14 @@ const Promise = require('bluebird');
 const {asyncForEach} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
 const {SUB_ORDER_STATUSES} = require('../../libs/subOrders');
+const {performance} = require('perf_hooks');
 
 module.exports = {
 
   massPrStatusUpdate: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       if (req.body.ids && req.body.ids.length > 0) {
 
         await Suborder.update({
@@ -26,12 +29,17 @@ module.exports = {
           message: 'Mass update pr status successfully'
         });
       }
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(422).json({
         success: false,
         message: 'Error in Mass update pr status'
       });
     } catch (error) {
       console.log('error', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Mass update pr status';
       res.status(400).json({
         success: false,
@@ -43,6 +51,8 @@ module.exports = {
   },
   forCsv: async (req, res) => {
     try {
+      const time1 = performance.now();
+
 
       let _pagination = pagination(req.query);
 
@@ -237,6 +247,9 @@ module.exports = {
         });
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalSuborder,
@@ -249,6 +262,8 @@ module.exports = {
 
     } catch (error) {
       console.log('error', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in getting all suborder with pagination';
       res.status(400).json({
         success: false,
@@ -262,6 +277,8 @@ module.exports = {
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
   getAll: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let _pagination = pagination(req.query);
 
       const SuborderQuery = Promise.promisify(Suborder.getDatastore().sendNativeQuery);
@@ -367,6 +384,9 @@ module.exports = {
         suborders = rawResult.rows;
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalSuborder,
@@ -379,6 +399,8 @@ module.exports = {
 
     } catch (error) {
       console.log('error', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in getting all suborder with pagination';
       res.status(400).json({
         success: false,
@@ -391,6 +413,8 @@ module.exports = {
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
   getsuborderwithpr: async (req, res) => {
     try {
+      const time1 = performance.now();
+
 
       let _pagination = pagination(req.query);
 
@@ -549,6 +573,9 @@ module.exports = {
         });
         suborder.total_price = totalPrice;
       });
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalSuborder,
@@ -559,6 +586,8 @@ module.exports = {
         data: suborders
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All Suborder with pagination';
       res.status(400).json({
         success: false,

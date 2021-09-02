@@ -5,11 +5,15 @@
  **/
 
 const {pagination} = require('../../libs/pagination');
+const {performance} = require('perf_hooks');
+
 module.exports = {
   //Method called for getting all warehouse variant data
   //Model models/WarehouseVariant.js
   getAll: async (req, res) => {
     try {
+      const time1 = performance.now();
+
 
       let _pagination = pagination(req.query);
 
@@ -42,8 +46,11 @@ module.exports = {
         .populate('variant_id')
         .populate('brand_id');
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       res.status(200).json({
+
         success: true,
         total: totalWarehouseVariant,
         limit: _pagination.limit,
@@ -55,6 +62,7 @@ module.exports = {
     } catch (error) {
       let message = 'Error in Get All WarehouseVariant  with pagination';
       console.log('error', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       res.status(400).json({
         success: false,
         message,

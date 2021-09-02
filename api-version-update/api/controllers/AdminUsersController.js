@@ -8,17 +8,23 @@
 const {getAllUsers} = require('../../libs/users');
 const {uploadImages} = require('../../libs/helper');
 let bcrypt = require('bcryptjs');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   /** Method called for getting all admin users data */
   /** Model models/User.js, Group.js */
   getAllAdminUsers: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const {
         allCustomer,
         totalCustomers,
         _pagination
       } = await getAllUsers(req, 'adminUser');
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json({
         success: true,
@@ -32,6 +38,7 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       let message = 'Error in getting all admin users with pagination';
       return res.status(400).json({
         success: false,
@@ -45,6 +52,8 @@ module.exports = {
   /** Model models/User.js */
   createAdminUser: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       if (req.body.hasImage === 'true') {
         try {
           const uploaded = await uploadImages(req.file('avatar'));
@@ -63,6 +72,9 @@ module.exports = {
 
       const user = await User.create(req.body).fetch();
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         user: user,
         token: jwToken.issue({id: user.id})
@@ -70,6 +82,8 @@ module.exports = {
 
     } catch (error) {
       console.log('admin user creation error: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Failed to create admin user',
@@ -82,7 +96,12 @@ module.exports = {
   /** Model: Group.js */
   getAllGroups: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let group = await Group.find({deletedAt: null});
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json({
         success: true,
@@ -92,6 +111,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error in getting all Groups',
@@ -104,6 +125,8 @@ module.exports = {
   /** Model models/User.js */
   updateAdminUser: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let user = await User.findOne({
         id: req.param('id')
       }).populate('group_id');
@@ -188,6 +211,9 @@ module.exports = {
         }
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Admin user updated successfully',
@@ -197,6 +223,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'Failed to update user',
@@ -210,6 +238,8 @@ module.exports = {
   getById: async (req, res) => {
     console.log('call here');
     try {
+      const time1 = performance.now();
+
       const user = await User.findOne({
         id: req.query.id
       })
@@ -221,6 +251,9 @@ module.exports = {
 
       /*console.log('user result: ', user);*/
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Successfully fetched data for this admin user',
@@ -229,6 +262,8 @@ module.exports = {
 
     } catch (error) {
       console.log('getById error: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Failed to get admin user data',

@@ -15,10 +15,13 @@ const {ORDER_STATUSES} = require('../../libs/orders');
 const {getAllUsers} = require('../../libs/users');
 const {customer_group_id, shop_group_id} = require('../../libs/groups');
 const {comparePasswords} = require('../../libs/helper');
+const {performance} = require('perf_hooks');
 
 module.exports = {
 
   authUser: async (req, res) => {
+    const time1 = performance.now();
+
     if (!req.token) {
       return res.status(401).json({err: 'No Authorization header was found'});
     }
@@ -42,12 +45,17 @@ module.exports = {
       if (!user) {
         return res.notFound();
       }
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(user);
 
     } catch (error) {
       if (error.name === 'UsageError') {
+        sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
         return res.badRequest(error);
       }
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       return res.serverError(error);
     }
 
@@ -55,6 +63,8 @@ module.exports = {
 
   findOne: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const user = await User.findOne({
         id: req.param('id')
       })
@@ -76,12 +86,17 @@ module.exports = {
         }
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(user);
 
     } catch (err) {
       if (err && err.naame === 'UsageError') {
+        sails.log.error(`Request Uri: ${req.path} ########## ${err}`);
         return res.badRequest(err);
       }
+      sails.log.error(`Request Uri: ${req.path} ########## ${err}`);
       return res.serverError(err);
     }
   },
@@ -90,6 +105,8 @@ module.exports = {
   //Model models/User.js
   destroy: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const user = await User.findOne({
         id: req.param('id')
       }).populate('group_id');
@@ -112,8 +129,12 @@ module.exports = {
       }
       await User.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(202).json(user);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       return res.status(401).json({
         success: false,
         message: 'Problem in deleting the user',
@@ -125,6 +146,8 @@ module.exports = {
   //Method called for creating a user data
   //Model models/User.js
   create: async (req, res) => {
+
+    const time1 = performance.now();
 
     // eslint-disable-next-line eqeqeq
     if (req.body.group_id == 4) {
@@ -164,10 +187,14 @@ module.exports = {
 
         const user = await User.create(req.body).fetch();
 
+        const time2 = performance.now();
+        sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.json(200, {user: user, token: jwToken.issue({id: user.id})});
 
       } catch (error) {
         console.log(error);
+        sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
         return res.status(400).json({
           success: false,
           message: 'Failed to create user',
@@ -180,6 +207,8 @@ module.exports = {
   //Method called for updating a user password data
   //Model models/User.js
   updatePassword: async (req, res) => {
+    const time1 = performance.now();
+
     if (!req.param('id')) {
       return res.badRequest('Invalid request');
     }
@@ -209,13 +238,17 @@ module.exports = {
         try {
           EmailService.sendPasswordResetMailUpdated(user, req.body.password);
         } catch (err) {
+          sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
           console.log(err);
         }
       }
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.json(200, {user: user, token: jwToken.issue({id: user.id})});
 
     } catch (ee) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${ee}`);
       console.log(ee);
       return res.status(400).json({
         success: false,
@@ -229,6 +262,8 @@ module.exports = {
   //Model models/User.js
   update: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let user = await User.findOne({
         id: req.param('id')
       }).populate('group_id');
@@ -312,12 +347,16 @@ module.exports = {
         }
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         user: user,
         token: jwToken.issue({id: user.id})
       });
 
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       console.log(error);
       res.status(400).json({
         success: false,
@@ -330,6 +369,8 @@ module.exports = {
 
   checkUsername: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       if (!req.body.username) {
         return res.status(422).json({
           success: false,
@@ -348,16 +389,23 @@ module.exports = {
       const user = await User.find(where);
 
       if (user && user.length > 0) {
+        const time2 = performance.now();
+        sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.status(200).json({
           success: false,
           isunique: false,
         });
       }
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         isunique: true,
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       console.log(error);
       return res.status(400).json({
         success: false,
@@ -369,6 +417,8 @@ module.exports = {
   checkPhone: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       if (!req.body.phone) {
         return res.status(422).json({
           success: false,
@@ -387,16 +437,23 @@ module.exports = {
       const user = await User.find(where);
 
       if (user && user.length > 0) {
+        const time2 = performance.now();
+        sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.status(200).json({
           success: false,
           isunique: false
         });
       }
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         isunique: true
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       console.log(error);
       return res.status(400).json({
         success: false,
@@ -408,6 +465,8 @@ module.exports = {
   checkEmail: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       if (!req.body.email) {
         return res.status(422).json({
           success: false,
@@ -426,16 +485,23 @@ module.exports = {
       const user = await User.find(where);
 
       if (user && user.length > 0) {
+        const time2 = performance.now();
+        sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.status(200).json({
           success: false,
           isunique: false,
         });
       }
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         isunique: true,
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       console.log(error);
       return res.status(400).json({
         success: false,
@@ -446,11 +512,16 @@ module.exports = {
   },
   getAllShopUsers: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const {
         allCustomer,
         totalCustomers,
         _pagination
       } = await getAllUsers(req, shop_group_id);
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json({
         success: true,
@@ -463,6 +534,7 @@ module.exports = {
       });
 
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       console.log(error);
       let message = 'Error in get all users with pagination';
       return res.status(400).json({
@@ -477,11 +549,16 @@ module.exports = {
   getAllCustomers: async (req, res) => {
     try {
 
+      const time1 = performance.now();
+
       const {
         allCustomer,
         totalCustomers,
         _pagination
       } = await getAllUsers(req, customer_group_id);
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json({
         success: true,
@@ -494,6 +571,7 @@ module.exports = {
       });
 
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       console.log(error);
       let message = 'Error in get all users with pagination';
       return res.status(400).json({
@@ -508,6 +586,8 @@ module.exports = {
   //Model models/User.js
   find: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let _pagination = pagination(req.query);
       let query = req.query;
 
@@ -578,6 +658,9 @@ module.exports = {
         .populate('division_id')
         .populate('upazila_id');
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalUser,
@@ -588,6 +671,7 @@ module.exports = {
         data: Users
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       let message = 'Error in get all users with pagination';
       res.status(400).json({
         success: false,
@@ -599,6 +683,8 @@ module.exports = {
   //Method called for getting user dashboard data
   //Model models/User.js, models/Order.js
   getAuthCustomerData: async (req, res) => {
+    const time1 = performance.now();
+
     if (!req.token) {
       return res.status(401).json({err: 'No Authorization header was found'});
     }
@@ -668,6 +754,9 @@ module.exports = {
           }
         }
       }
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         totalOrder: totalOrder,
@@ -681,6 +770,7 @@ module.exports = {
         data: aUser
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       let message = 'Error in Get All UserDashboard with pagination';
 
       res.status(400).json({
@@ -695,6 +785,8 @@ module.exports = {
   getUserWithDashboardData: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       const user = User.findOne({
         id: req.param('id')
       });
@@ -785,6 +877,9 @@ module.exports = {
         }
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         totalOrder: totalOrder,
@@ -798,6 +893,7 @@ module.exports = {
         data: aUser
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       let message = 'Error in Get All User Dashboard with pagination';
 
       res.status(400).json({

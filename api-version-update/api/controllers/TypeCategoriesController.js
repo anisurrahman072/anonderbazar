@@ -7,11 +7,15 @@
 
 const {asyncForEach} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
+const {performance} = require('perf_hooks');
+
 module.exports = {
   //Method called for getting all product type categories
   //Model models/Category.js
   getAll: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let _pagination = pagination(req.query);
 
       /* WHERE condition for .............START ...............................*/
@@ -51,6 +55,9 @@ module.exports = {
         sort: _sort,
       }).populate('offer_id');
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalCategory,
@@ -61,6 +68,8 @@ module.exports = {
         data: categories
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All category with pagination';
       res.status(400).json({
         success: false,
@@ -73,6 +82,8 @@ module.exports = {
   //Model models/Category.js
   withProductSubcategory: async (req, res) => {
     try {
+      const time1 = performance.now();
+
 
       let _pagination = pagination(req.query);
 
@@ -103,6 +114,9 @@ module.exports = {
 
       });
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalCategory,
@@ -114,6 +128,8 @@ module.exports = {
 
       });
     } catch (error) {
+
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
 
       res.status(400).json({
         success: false,

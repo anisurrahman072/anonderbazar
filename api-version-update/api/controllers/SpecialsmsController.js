@@ -5,6 +5,7 @@ const _ = require('lodash');
  * @description :: Server-side logic for managing orders
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
+const {performance} = require('perf_hooks');
 
 module.exports = {
 /*  //Method called for getting all products

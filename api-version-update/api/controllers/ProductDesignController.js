@@ -7,12 +7,16 @@
 
 
 const {asyncForEach} = require('../../libs/helper');
+const {performance} = require('perf_hooks');
+
 module.exports = {
 
   //Method called for creating a product design
   //Model models/ProductDesign.js
   create: async (req, res) => {
     try {
+      const time1 = performance.now();
+
 
       let productDesign = await ProductDesign.create(req.body).fetch();
       if (productDesign) {
@@ -29,6 +33,9 @@ module.exports = {
           .populate('genre_id')
           .populate('warehouse_id');
 
+        const time2 = performance.now();
+        sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.status(200).json({
           status: true,
           message: 'create product design',
@@ -37,6 +44,8 @@ module.exports = {
 
       }
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'error in productdesign/create ',
@@ -52,6 +61,8 @@ module.exports = {
   //Model models/ProductDesign.js
   update: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let productDesign = await ProductDesign.updateOne({id: req.param('id')}, req.body);
       if (productDesign) {
 
@@ -71,6 +82,9 @@ module.exports = {
           newProductDesign.push(tmp);
 
         });
+        const time2 = performance.now();
+        sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.status(200).json({
           status: true,
           message: 'update product design',
@@ -79,6 +93,8 @@ module.exports = {
 
       }
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'error in productdesign/update',
@@ -93,10 +109,17 @@ module.exports = {
   // destroy a row
   destroy: function (req, res) {
     try {
+      const time1 = performance.now();
+
       const productDesign = ProductDesign.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(200, {productDesign: productDesign});
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(error.status).json({error: error});
     }
   },

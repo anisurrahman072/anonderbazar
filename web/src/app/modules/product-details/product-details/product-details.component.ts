@@ -40,7 +40,7 @@ import {GLOBAL_CONFIGS} from "../../../../environments/global_config";
 export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     couponProductModalRef: BsModalRef;
-    similarProducts: null;
+    /*similarProducts: null;*/
     id: any;
     data: Product;
     productDescriptionData: any = null;
@@ -97,6 +97,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     addToCartSuccessProduct: any;
     addToWhishlistSuccessProduct: any;
     currentUser$: Observable<any>;
+    categoryId: number;
+    subCategoryId: number;
 
     /**offer related variables*/
     offer$: Observable<Offer>;
@@ -293,7 +295,9 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 }
                 this.updateFinalprice();
                 if (result.data[0].subcategory_id !== undefined && result.data[0].subcategory_id !== null) {
-                    this.getSimilarProductData(result.data[0].category_id.id, result.data[0].subcategory_id.id);
+                    /*this.getSimilarProductData(result.data[0].category_id.id, result.data[0].subcategory_id.id);*/
+                    this.categoryId = result.data[0].category_id.id;
+                    this.subCategoryId = result.data[0].subcategory_id.id;
                 }
             }
         }, (error) => {
@@ -309,12 +313,12 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         });
     }
 
-    getSimilarProductData(categotyId, subcategory) {
+    /*getSimilarProductData(categotyId, subcategory) {
         this.productService.getByCategory(categotyId, subcategory)
             .subscribe(relatedProduct => {
                 this.similarProducts = relatedProduct;
             });
-    }
+    }*/
 
     updateFinalprice() {
         if (this.data) {

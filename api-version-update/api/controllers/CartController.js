@@ -7,19 +7,34 @@
 
 const {asyncForEach} = require('../../libs/helper');
 const {isResourceOwner} = require('../../libs/check-permissions');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   create: (req, res) => {
     try {
+      const time1 = performance.now();
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json({message: 'Not Authorized'});
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.json({error: error});
     }
   },
   update: (req, res) => {
     try {
+      const time1 = performance.now();
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json({message: 'Not Authorized'});
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.json({error: error});
     }
   },
@@ -27,6 +42,8 @@ module.exports = {
   //Model models/Cart.js
   destroy: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const foundCart = await Cart.findOne({
         id: req.param('id')
       });
@@ -36,8 +53,13 @@ module.exports = {
       }
 
       const cart = await Cart.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(cart);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.json({error: error});
     }
 
@@ -51,6 +73,7 @@ module.exports = {
     }
 
     try {
+      const time1 = performance.now();
 
       let cart = await Cart.findOne({
         user_id: req.token.userInfo.id,
@@ -110,6 +133,9 @@ module.exports = {
         data.cart_items.push(_cartItem);
       });
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json({
         success: true,
         message: 'cart Item found',
@@ -117,6 +143,8 @@ module.exports = {
       });
     } catch (err) {
       console.log('err', err);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'no cart found',
@@ -128,6 +156,8 @@ module.exports = {
   //Model models/Cart.js and models/CartItem.js
   findwithcartItems: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       if (!req.param('user_id')) {
         return res.badRequest('Invalid Request');
       }
@@ -266,6 +296,9 @@ module.exports = {
 
       /*console.log('Final data: ', data);*/
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json({
         success: true,
         message: 'cart found',
@@ -274,6 +307,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'no cart found',
@@ -284,8 +319,15 @@ module.exports = {
 
   index: (req, res) => {
     try {
+      const time1 = performance.now();
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json({message: 'Not Authorized'});
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.json({error: error});
     }
   },

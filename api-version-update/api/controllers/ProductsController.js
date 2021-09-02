@@ -15,12 +15,15 @@ const {
 const {asyncForEach, escapeExcel} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
 const moment = require('moment');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   //Method called for getting all products
   //Model models/Product.js
   index: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const productQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
 
       let _pagination = pagination(req.query);
@@ -176,6 +179,9 @@ module.exports = {
         products = rawResult.rows;
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalProducts,
@@ -188,7 +194,8 @@ module.exports = {
     } catch (error) {
       console.log('error', error);
 
-      let message = 'Error in getting all products with pagination';
+      sails.log.error(`RequestUrl: ${req.path} ###### ${error}`);
+      let message = 'Error in getting all products with paginationtttttt';
       res.status(400).json({
         success: false,
         message,
@@ -202,11 +209,16 @@ module.exports = {
   findOne: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       let product = await Product.findOne({
         where: {
           id: req.params._id
         }
       });
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(200).json({
         success: true,
@@ -215,6 +227,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'error in read product';
       return res.status(400).json({
         success: false,
@@ -227,6 +241,8 @@ module.exports = {
   //Model models/Product.js,models/ProductDesign.js,models/CraftmanPrice.js
   designCombination: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let productDesignData = await ProductDesign.find({
         where: {product_id: req.params._id, deletedAt: null}
       })
@@ -267,12 +283,17 @@ module.exports = {
         }
       });
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'get from product designCombination',
         data
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'error from designCombination',
@@ -285,6 +306,8 @@ module.exports = {
   //Model models/Product.js
   search: async (req, res) => {
     try {
+
+      const time1 = performance.now();
 
       let _pagination = pagination(req.query);
 
@@ -395,17 +418,23 @@ module.exports = {
         .populate('brand_id')
         .populate('warehouse_id');
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
-        message: 'get product in search',
+        message: `get ${total} product(s) in search`,
         total,
         data: products,
-        limit: _pagination.limit,
-        skip: _pagination.skip,
-        page: _pagination.page
+        ..._pagination
+        // limit: _pagination.limit,
+        // skip: _pagination.skip,
+        // page: _pagination.page
       });
     } catch (error) {
       console.log('error', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'error in search product',
@@ -418,6 +447,8 @@ module.exports = {
   getBySearchTerm: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       let _pagination = pagination(req.query);
 
       let _where = {
@@ -458,6 +489,9 @@ module.exports = {
       });
 
       const total = productTotal;
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'get product in search ',
@@ -466,6 +500,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'error in search product',
@@ -478,6 +514,8 @@ module.exports = {
   generateExcel: async (req, res) => {
 
     try {
+
+      const time1 = performance.now();
 
       const authUser = req.token.userInfo;
 
@@ -579,8 +617,13 @@ module.exports = {
 
       wb.write('Excel-' + Date.now() + '.xlsx', res);
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
     } catch (error) {
       console.error(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'error in generating excel',
@@ -593,6 +636,8 @@ module.exports = {
   bulkUpload: async (req, res) => {
 
     try {
+
+      const time1 = performance.now();
 
       const authUser = req.token.userInfo;
 
@@ -730,6 +775,9 @@ module.exports = {
         }
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Number of Products successfully created: ' + count,
@@ -737,6 +785,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'error in bulk product upload',
@@ -746,6 +796,8 @@ module.exports = {
   },
 
   productExcel: async (req, res) => {
+
+    const time1 = performance.now();
 
     if ((!req.query.type_id || req.query.type_id === 'null') && (!req.query.warehouse_id || req.query.warehouse_id === 'null')) {
       return res.status(404).json({
@@ -1160,8 +1212,13 @@ module.exports = {
 
       wb.write('Excel-' + Date.now() + '.xlsx', res);
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All products with excel';
       res.status(400).json({
         success: false,
@@ -1173,6 +1230,8 @@ module.exports = {
 
   bulkUpdate: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let count = 0;
       const authUser = req.token.userInfo;
       const len = req.body.length;
@@ -1425,12 +1484,17 @@ module.exports = {
         count++;
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'Number of Products successfully updated: ' + count,
       });
     } catch (error) {
       console.log('Error in bulk update: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         error
@@ -1440,6 +1504,8 @@ module.exports = {
 
   getProductsByName: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
       let rawSelect = `
     SELECT
@@ -1466,12 +1532,17 @@ module.exports = {
       const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
       console.log('products', rawResult.rows);
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Successfully fetched all products',
         products: rawResult.rows
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error occurred while fetching all products',
@@ -1482,7 +1553,8 @@ module.exports = {
 
   getByCategorySubCategory: async (req, res) => {
     try {
-      console.log('tttttaa');
+      const time1 = performance.now();
+
       const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
       let rawSelect = `
         SELECT
@@ -1507,12 +1579,17 @@ module.exports = {
       const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
       console.log('products', rawResult.rows);
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         message: 'Successfully fetched all products',
         products: rawResult.rows
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Error occurred while fetching all products',

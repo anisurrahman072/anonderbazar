@@ -6,12 +6,15 @@
  */
 
 const {pagination} = require('../../libs/pagination');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   //Method called for getting all product part data
   //Model models/Part.js
   getAll: async (req, res) => {
     try {
+      const time1 = performance.now();
+
 
       let _pagination = pagination(req.query);
 
@@ -49,6 +52,9 @@ module.exports = {
         .populate( 'category_id')
         .populate( 'subcategory_id');
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalPart,
@@ -60,6 +66,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in getting all parts with pagination';
       res.status(400).json({
         success: false,

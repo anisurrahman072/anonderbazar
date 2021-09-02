@@ -11,6 +11,7 @@ const EmailService = require('../services/EmailService');
 const SmsService = require('../services/SmsService');
 const {comparePasswords} = require('../../libs/helper');
 const {uploadImages} = require('../../libs/helper');
+const {performance} = require('perf_hooks');
 
 
 module.exports = {
@@ -18,6 +19,8 @@ module.exports = {
   //Method called for customer login for frontend
   //Model models/User.js
   login: async (req, res) => {
+    const time1 = performance.now();
+
     let username = req.param('username');
     let password = req.param('password');
 
@@ -45,6 +48,9 @@ module.exports = {
         return res.json(401, {model: 'userName', message: 'Not an active user'});
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json({
         user: user,
         token: jwToken.issue({
@@ -57,6 +63,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.json(400, {message: 'Something went wrong!', error});
     }
   },
@@ -65,6 +73,8 @@ module.exports = {
   //Method called for vendor/admin login for backend
   //Model models/User.js
   dashboardLogin: async (req, res) => {
+    const time1 = performance.now();
+
     let username = req.param('username');
     let password = req.param('password');
     if (!username || !password) {
@@ -117,6 +127,9 @@ module.exports = {
         accessList.list = [];
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json({
         user: user.toJSON(),
         token: jwToken.issue({
@@ -130,6 +143,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.json(400, {message: 'Something went wrong!', error});
     }
   },
@@ -138,6 +153,8 @@ module.exports = {
   //Method called for customer login for frontend
   //Model models/User.js
   customerLogin: async (req, res) => {
+    const time1 = performance.now();
+
     let username = req.param('username');
     let password = req.param('password');
 
@@ -176,6 +193,9 @@ module.exports = {
         return res.json(403, {err: 'Not an active user'});
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json({
         user: user.toJSON(),
         token: jwToken.issue({
@@ -188,6 +208,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.json(400, {message: 'Something went wrong!', error});
     }
 
@@ -199,6 +221,8 @@ module.exports = {
   warehouseSignup: async (req, res) => {
     console.log(req.body);
     try {
+      const time1 = performance.now();
+
       let postBody = {...req.body};
       try {
         postBody.userdata = JSON.parse(postBody.userdata);
@@ -244,12 +268,17 @@ module.exports = {
         });
 
       console.log('Final output: ', warehouse, user);
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(201).json({
         warehouse,
         user
       });
     } catch (error) {
       console.log('error occurred', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.json(400, {message: 'Something went wrong!', error});
     }
 
@@ -260,6 +289,8 @@ module.exports = {
   //Model models/User.js
   signup: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       if (req.body && req.body.dob === '') {
         req.body.dob = null;
       }
@@ -324,6 +355,9 @@ module.exports = {
       let data = Object.assign({}, cart);
       data.cart_items = [];
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(200, {
         user: user,
         cart: data,
@@ -336,6 +370,8 @@ module.exports = {
       });
 
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'error in user signup',
@@ -348,7 +384,12 @@ module.exports = {
   //Model models/User.js
   usernameUnique: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let user = await User.find({username: req.body.username});
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       if (user && user.length > 0) {
         return res.json(200, {isunique: false});
       } else {
@@ -356,6 +397,8 @@ module.exports = {
       }
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.json(400, {isunique: true});
     }
   },
@@ -366,6 +409,8 @@ module.exports = {
       deletedAt: null,
       group_id: 2
     };
+    const time1 = performance.now();
+
 
     try {
       if (req.body.phone && req.body.email) {
@@ -423,12 +468,17 @@ module.exports = {
         });
 
       }
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(422).json({
         success: false,
         message: 'More than one user found with the provided information'
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Failed to update password',
@@ -439,6 +489,8 @@ module.exports = {
   //Method called for updating a user password
   //Model models/User.js
   userPasswordUpdate: async (req, res) => {
+
+    const time1 = performance.now();
 
     const authUser = req.token.userInfo;
 
@@ -462,12 +514,17 @@ module.exports = {
         return res.json(500, 'There was a problem in processing the request.');
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(200, {
         user: authUser, token: jwToken.issue({id: authUser.id})
       });
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'Failed to update Password',
@@ -479,6 +536,8 @@ module.exports = {
   /*Method called for verifying user's phone number and returning data of that user*/
   verifyUserPhone: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const verificationCode = req.query.verificationCode;
       const signedUpUserName = req.query.signedUpUserName;
       const user = await User.findOne({
@@ -512,6 +571,9 @@ module.exports = {
       }
       await User.updateOne({username: user.username}).set({is_verified: true});
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         user: user,
         token: jwToken.issue({
@@ -524,6 +586,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Failed to authenticate the user with the given verification code',
@@ -536,6 +600,8 @@ module.exports = {
    here it will update the verification code and the timer in the database */
   resendOTPCode: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       const signedUpUserName = req.query.signedUpUserName;
       const newCode = Math.floor(100000 + Math.random() * 900000);
       const expireTime = new Date(Date.now() + (5 * 60 * 1000));
@@ -561,6 +627,9 @@ module.exports = {
         }
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(201).json({
         data: 'code resent',
         success: true,
@@ -569,6 +638,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         message: 'Failed to resend OTP code',
@@ -578,6 +649,8 @@ module.exports = {
   },
 
   passwordChange: async (req, res) => {
+    const time1 = performance.now();
+
     let user_id = req.body.user_id;
     let confirmPassword = req.body.confirmPassword;
     let newPassword = req.body.newPassword;
@@ -641,6 +714,9 @@ module.exports = {
         }
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(201).json({
         'success': true,
         'message': 'Your password has been updated and new password has been sent your mobile/email'
@@ -648,6 +724,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         message: 'failed to update password',
         error
@@ -657,12 +735,17 @@ module.exports = {
 
   checkEmailPhone: async (req, res) => {
     try {
+      const time1 = performance.now();
+
       let user = await User.findOne({
         email: req.query.email,
         phone: req.query.phone,
         deletedAt: null,
         user_type: 'admin'
       });
+
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       return res.status(201).json({
         success: true,
@@ -672,6 +755,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         message: 'failed to check email and phone',
         error

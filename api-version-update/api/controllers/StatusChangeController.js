@@ -8,9 +8,15 @@ const moment = require('moment');
 const {ORDER_STATUSES} = require('../../libs/orders');
 const {ORDER_STATUSES_INDEX} = require('../../libs/orders');
 const {SUB_ORDER_STATUSES_INDEX} = require('../../libs/subOrders');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   currentTime: (req, res) => {
+    const time1 = performance.now();
+
+    const time2 = performance.now();
+    sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
     return res.json({
       currentTime: moment().format('YYYY-MM-DD HH:mm:ss')
     });
@@ -18,6 +24,7 @@ module.exports = {
   //Method called for changing product order status
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
   updatecustom: async (req, res) => {
+    const time1 = performance.now();
 
     const allSubOrderStatuses = Object.keys(SUB_ORDER_STATUSES_INDEX).map(key=>parseInt(key, 10));
     const allOrderStatuses = Object.keys(ORDER_STATUSES_INDEX).map(key=>parseInt(key, 10));
@@ -46,10 +53,14 @@ module.exports = {
         status: submittedStatus
       }).fetch();
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(200, data);
 
     } catch (error) {
 
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
       res.status(400).json({
         success: false,
         message: 'Problem in updating status',
@@ -62,6 +73,8 @@ module.exports = {
   updatecustomcourier: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
       let order = await Order.find({where: {id: body.order_id}})
         .populate('billing_address')
         .populate('shipping_address')
@@ -108,11 +121,16 @@ module.exports = {
           EmailService.orderStatusdMailVendor(order, warehouse, ORDER_STATUSES_INDEX[payload.status]);
         }
 
+        const time2 = performance.now();
+        sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
         return res.json(200, data);
       } else {
         return res.status(400).json({success: false});
       }
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({success: false, error});
     }
 

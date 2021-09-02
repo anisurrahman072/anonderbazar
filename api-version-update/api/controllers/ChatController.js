@@ -4,11 +4,14 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
+const {performance} = require('perf_hooks');
 
 module.exports = {
   //Method called for initiating a chat room
   //Model models/Chat.js
   create: async (req, res) => {
+
+    const time1 = performance.now();
 
     async function create(body) {
       try {
@@ -42,11 +45,17 @@ module.exports = {
         }
       } catch (error) {
         console.log(error);
+        sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
         return res.status(400).json({ success: false });
       }
     }
 
     await create(req.body);
+
+    const time2 = performance.now();
+    sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
   },
 
 };

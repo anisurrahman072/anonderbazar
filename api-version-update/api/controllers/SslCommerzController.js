@@ -10,10 +10,13 @@ const {getGlobalConfig} = require('../../libs/helper');
 const {sslWebUrl} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
 const logger = require('../../libs/softbd-logger').Logger;
+const {performance} = require('perf_hooks');
 
 module.exports = {
 
   ipnPaymentSuccess: async function (req, res) {
+
+    const time1 = performance.now();
 
     let customer = await PaymentService.getTheCustomer(req.query.user_id);
     if (!customer) {
@@ -137,7 +140,8 @@ module.exports = {
       }
 
       await PaymentService.sendEmail(orderForMail);
-
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
       return res.status(200).json({
         success: true
       });
@@ -145,6 +149,9 @@ module.exports = {
     } catch (finalError) {
       logger.orderLogAuth(req, finalError);
       console.log('finalError', finalError);
+
+      sails.log.error(`Request Uri: ${req.path} ########## ${finalError}`);
+
       return res.status(400).json({
         failure: true
       });
@@ -152,6 +159,8 @@ module.exports = {
   },
   //Method called when sslCommerzSuccess from frontend
   paymentSuccess: async function (req, res) {
+    const time1 = performance.now();
+
     let customer = await PaymentService.getTheCustomer(req.query.user_id);
     if (!customer) {
       res.writeHead(301,
@@ -283,6 +292,8 @@ module.exports = {
       }
 
       await PaymentService.sendEmail(orderForMail);
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
 
       res.writeHead(301,
         {
@@ -293,6 +304,8 @@ module.exports = {
     } catch (finalError) {
       console.log('finalError', finalError);
       logger.orderLogAuth(req, finalError);
+      sails.log.error(`Request Uri: ${req.path} ########## ${finalError}`);
+
       res.writeHead(301,
         {
           Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent(finalError.message)
@@ -303,6 +316,11 @@ module.exports = {
   },
   //Method called when sslCommerzFail fails sends redirectory route
   paymentFailure: function (req, res) {
+    const time1 = performance.now();
+
+    const time2 = performance.now();
+    sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
     res.writeHead(301,
       {Location: sslWebUrl + '/checkout'}
     );
@@ -310,12 +328,19 @@ module.exports = {
   },
   //Method called when sslCommerzError error sends redirectory route
   paymentError: function (req, res) {
+    const time1 = performance.now();
+    const time2 = performance.now();
+    sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
+
     res.writeHead(301,
       {Location: sslWebUrl + '/checkout'}
     );
     res.end();
   },
   ipnPaymentSuccessForPartial: async function (req, res) {
+
+    const time1 = performance.now();
 
     let customer = await PaymentService.getTheCustomer(req.query.user_id);
     if (!customer) {
@@ -413,18 +438,24 @@ module.exports = {
         });
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true
       });
     } catch (finalError) {
       logger.orderLogAuth(req, finalError);
       console.log('finalError', finalError);
+      sails.log.error(`Request Uri: ${req.path} ########## ${finalError}`);
       return res.status(400).json({
         failure: true
       });
     }
   },
   paymentSuccessPartial: async function (req, res) {
+
+    const time1 = performance.now();
 
     let customer = await PaymentService.getTheCustomer(req.query.user_id);
     if (!customer) {
@@ -521,6 +552,9 @@ module.exports = {
         });
       }
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.writeHead(301,
         {
           Location: sslWebUrl + '/profile/orders/invoice/' + order.id
@@ -531,6 +565,8 @@ module.exports = {
     } catch (finalError) {
       console.log(finalError);
       logger.orderLogAuth(req, finalError);
+
+      sails.log.error(`Request Uri: ${req.path} ########## ${finalError}`);
       res.writeHead(301,
         {
           Location: sslWebUrl + '/profile/orders?bKashError=' + encodeURIComponent(finalError.message)
@@ -540,6 +576,11 @@ module.exports = {
     }
   },
   paymentFailurePartial: async function (req, res) {
+    const time1 = performance.now();
+
+    const time2 = performance.now();
+    sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
     console.log(finalError);
     res.writeHead(301,
       {
@@ -549,6 +590,11 @@ module.exports = {
     res.end();
   },
   paymentErrorPartial: async function (req, res) {
+    const time1 = performance.now();
+
+    const time2 = performance.now();
+    sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
     console.log(finalError);
     res.writeHead(301,
       {

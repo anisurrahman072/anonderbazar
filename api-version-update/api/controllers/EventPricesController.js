@@ -4,6 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
+const {performance} = require('perf_hooks');
 
 const {pagination} = require('../../libs/pagination');
 module.exports = {
@@ -12,6 +13,8 @@ module.exports = {
   index: async (req, res) => {
 
     try {
+      const time1 = performance.now();
+
 
       let _pagination = pagination(req.query);
 
@@ -28,6 +31,9 @@ module.exports = {
         skip: _pagination.skip,
       });
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalEventPrices,
@@ -39,6 +45,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Getting All products with pagination';
       res.status(400).json({
         success: false,
@@ -51,6 +59,8 @@ module.exports = {
   //Model models/EventPrice.js
   getPriceByIds:async (req, res)=>{
     try {
+      const time1 = performance.now();
+
 
       let _pagination = pagination(req.query);
 
@@ -63,6 +73,9 @@ module.exports = {
       _pagination.limit = _pagination.limit ? _pagination.limit : totalEventPrices;
       let eventprices = await EventPrice.find().where({id: ids});
 
+      const time2 = performance.now();
+      sails.log.debug(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalEventPrices,
@@ -74,6 +87,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All products with pagination';
       res.status(400).json({
         success: false,
