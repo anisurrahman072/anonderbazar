@@ -192,7 +192,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             shipping_division_id: ['', [Validators.required]],
 
             //PaymentType
-            paymentType: ['SSLCommerce', []]
+            paymentType: ['', []]
         });
 
 
@@ -726,7 +726,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         console.log('formCheckout', value)
         if (!(value && value.paymentType)) {
-            this.toastr.error("Please a payment method in order to proceed", "Error", {
+            this.toastr.error("Please select a payment method in order to proceed", "Error", {
                 positionClass: 'toast-bottom-right'
             });
             return false;
