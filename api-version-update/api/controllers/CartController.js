@@ -201,7 +201,7 @@ module.exports = {
           .populate('product_images', {deletedAt: null})
           .populate('warehouse_id')
           .populate('type_id');
-        console.log('Cart item: ', dd.id, index);
+        /*console.log('Cart item: ', dd.id, index);*/
 
         if (dd) {
           cartItems[index].product_id = dd.toJSON();

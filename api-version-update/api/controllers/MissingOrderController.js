@@ -304,7 +304,7 @@ module.exports = {
             let cartItemsTemp = cartItems.filter(
               asset => asset.product_id.warehouse_id === thisWarehouseID
             );
-            console.log('cartItemsTemp', cartItemsTemp);
+            /*console.log('cartItemsTemp', cartItemsTemp);*/
 
             let suborderTotalPrice = _.sumBy(cartItemsTemp, 'product_total_price');
             let suborderTotalQuantity = _.sumBy(cartItemsTemp, 'product_quantity');
