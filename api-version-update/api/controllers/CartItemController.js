@@ -24,7 +24,7 @@ module.exports = {
     const cart = cartItem.cart_id;
 
     /*console.log('req.token.userInfo', req.token.userInfo);*/
-    console.log('cartItem: in destroy', cartItem);
+    /*console.log('cartItem: in destroy', cartItem);*/
 
     if (!isResourceOwner(req.token.userInfo, cart)) {
       return res.forbidden();
@@ -203,7 +203,7 @@ module.exports = {
           warehouse_id: previousCartItems[i].product_id.warehouse_id
         }, offeredProducts);
 
-        console.log('firssssttt: ', i, offer_id_number, offer_type, previousCartItems[i]);
+        /*console.log('firssssttt: ', i, offer_id_number, offer_type, previousCartItems[i]);*/
 
         if(i > 0){
           if(offerIdNumber !== offer_id_number || offerType !== offer_type){
@@ -350,8 +350,8 @@ module.exports = {
             'total_price': totalPrice,
             'total_quantity': totalQty,
           };
-          console.log('cartItem: in create: for update operation', cartItem);
-          console.log('cartItem: in create: for update operation: cartPayLoad', cartPayload);
+          /*console.log('cartItem: in create: for update operation', cartItem);
+          console.log('cartItem: in create: for update operation: cartPayLoad', cartPayload);*/
           await Cart.update({id: cartItem.cart_id}).set(cartPayload)
             .usingConnection(db);
         });
