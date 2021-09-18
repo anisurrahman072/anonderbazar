@@ -58,7 +58,7 @@ module.exports = {
         allBrandIds = allBrandIds.concat(row.brand_ids);
       });
 
-      allBrandIds = _.uniq(allBrandIds);
+      allBrandIds = _.uniq(allBrandIds).filter(id => id);
 
       let brands = await Brand.find({
         where: {
